@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@color/black_overlay"
+    android:orientation="vertical" >
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/black_overlay"
+        android:orientation="vertical">
+
+
+        <com.ogalo.partympakache.wanlive.WanImageView
+            android:id="@+id/feedImage1"
+            android:layout_width="match_parent"
+
+            android:layout_height="match_parent"
+
+            android:background="@color/black_overlay"
+
+            android:scaleType="fitXY"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/titles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="10dp"
+            android:layout_marginTop="180dp"
+            android:text="Title"
+            android:layout_margin="10dp"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            />
+
+        <RatingBar
+            android:id="@+id/myrating"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="108dp"
+
+
+            android:paddingLeft="20dp"
+            android:focusable="false"
+            android:isIndicator="true"
+            android:numStars="5"
+            android:rating="3.4"
+            android:stepSize="0.5" />
+
+
+
+        <TextView
+            android:id="@+id/longitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+
+            android:layout_alignParentStart="true"
+            android:textSize="1dp"
+            android:text="longitude"
+            android:textColor="@color/transpar" />
+
+        <TextView
+            android:id="@+id/latitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/longitude"
+            android:layout_marginStart="92dp"
+            android:text="latitude"
+            android:textColor="@color/transpar" />
+
+        <TextView
+            android:id="@+id/rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/longitude"
+            android:layout_centerHorizontal="true"
+            android:text="rating"
+            android:textColor="@color/transpar" />
+
+
+
+
+
+        <TextView
+            android:id="@+id/imge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/longitude"
+            android:layout_marginEnd="15dp"
+            android:text="image"
+            android:textColor="@color/transpar" />
+
+
+        <TextView
+            android:id="@+id/statuses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="196dp"
+            android:ellipsize="end"
+            android:paddingLeft="20dp"
+            android:singleLine="true"
+            android:textSize="16dp"
+            android:text="status"
+            android:textColor="@color/grey_light" />
+
+
+        <ToggleButton
+            android:id="@+id/toggleButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/titles"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="19dp"
+            android:background="@drawable/heart_notliked"
+            android:focusable="false"
+            android:padding="30dp"
+            android:text=""
+            android:textOff=""
+            android:textOn=""  />
+
+        <Button
+            android:id="@+id/buy"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:focusable="false"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:background="@drawable/bg_greenf"
+            android:layout_alignBottom="@+id/myrating"
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/white"
+            android:text="Get Tickets" />
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/cost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:focusable="false"
+        android:layout_alignParentStart="true"
+       android:layout_marginTop="170dp"
+        android:paddingLeft="20dp"
+        android:text="cost"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:focusable="false"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="191dp"
+        android:textColor="@color/transpar"
+        android:paddingLeft="20dp"
+        android:textSize="1dp"
+        android:text="Time" />
+
+
+</RelativeLayout>
+

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:background="@color/black_overlay"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/black_overla">
+
+        <com.ogalo.partympakache.wanlive.WanImageView
+            android:id="@+id/feedImage1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+
+
+            android:layout_alignParentTop="true"
+
+            android:background="@color/black_overlay"
+            android:focusable="false"
+            android:scaleType="fitXY"
+            android:visibility="visible" />
+
+
+
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/titles"
+        android:layout_width="218dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
+
+        android:layout_marginTop="20dp"
+        android:focusable="false"
+        android:padding="10dp"
+        android:paddingRight="30dp"
+        android:text="Title"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_margin="10dp">
+    <RatingBar
+            android:id="@+id/myrating"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+
+
+            android:layout_alignParentStart="true"
+            android:focusable="false"
+            android:isIndicator="true"
+
+            android:numStars="5"
+            android:rating="3.4"
+            android:stepSize="0.5" />
+</RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/cost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/titles"
+        android:layout_marginEnd="85dp"
+        android:focusable="false"
+        android:padding="10dp"
+        android:paddingRight="10dp"
+        android:text="Cost"
+        android:textAlignment="textEnd"
+        android:textColor="@color/white"
+        android:textSize="14dp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/titles"
+        android:layout_marginTop="229dp"
+        android:focusable="false"
+        android:text="Time"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/statuses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/titles"
+        android:layout_marginTop="100dp"
+        android:ellipsize="end"
+        android:textStyle="italic"
+
+        android:focusable="false"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:singleLine="true"
+        android:text="status"
+        android:textColor="@color/gallery_grey"
+        android:textSize="14dp" />
+
+    <TextView
+        android:id="@+id/imge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/titles"
+        android:layout_marginBottom="206dp"
+        android:textSize="1dp"
+        android:focusable="false"
+        android:textColor="@color/transpar"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/longitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/titles"
+        android:layout_marginBottom="149dp"
+        android:textSize="1dp"
+        android:focusable="false"
+        android:textColor="@color/transpar"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/latitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/titles"
+        android:layout_alignTop="@+id/longitude"
+        android:textSize="1dp"
+        android:focusable="false"
+        android:textColor="@color/transpar"
+        android:text="" />
+    <TextView
+        android:id="@+id/rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:layout_alignStart="@+id/titles"
+        android:layout_alignTop="@+id/longitude"
+        android:textSize="1dp"
+        android:textColor="@color/transpar"
+        android:text="" />
+
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_margin="10dp"
+        android:text=""
+        android:textOff=""
+        android:textOn=""
+    android:layout_alignParentEnd="true"
+        android:background="@drawable/heart_notliked"
+        android:focusable="false"
+        android:layout_alignParentTop="true"
+       />
+
+    <RelativeLayout
+        android:id="@+id/buda"
+        android:layout_width="wrap_content"
+        android:layout_height="87dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+
+        <ToggleButton
+            android:id="@+id/toggl"
+            android:layout_width="90dp"
+            android:layout_height="25dp"
+            android:layout_alignParentEnd="true"
+
+
+            android:layout_alignTop="@+id/buy"
+            android:layout_marginEnd="102dp"
+            android:background="@drawable/bg_greenreal"
+
+
+            android:focusable="false"
+            android:text=""
+            android:textColor="@color/white"
+            android:textOff="   Reserve   "
+            android:textOn="   Reserved  "
+            android:textSize="10dp" />
+
+        <Button
+            android:id="@+id/buy"
+            android:layout_width="90dp"
+            android:layout_height="25dp"
+            android:textSize="10dp"
+
+
+
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="13dp"
+            android:background="@drawable/bg_green"
+            android:focusable="false"
+
+            android:text="Buy tickets"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/budan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="104dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+       >
+
+
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_alignBottom="@+id/buda"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="1dp"
+        android:layout_height="20dp"></View>
+
+
+
+</RelativeLayout>

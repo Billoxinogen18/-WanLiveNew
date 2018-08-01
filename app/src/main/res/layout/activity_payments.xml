@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Payments">
+
+    <Button
+        android:id="@+id/payment"
+        android:layout_width="match_parent"
+        android:background="@color/blacko"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        android:text="Ticket" />
+
+    <ImageButton
+        android:id="@+id/add"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+        android:background="@color/transpar"
+        app:srcCompat="@drawable/plus" />
+
+    <ImageButton
+        android:id="@+id/minus"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:background="@color/transpar"
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+
+        app:srcCompat="@drawable/minuse" />
+
+    <TextView
+        android:id="@+id/prices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Prices"
+        android:textColor="@color/blacko"
+        android:textSize="22dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="102dp"
+        android:text="KSH." />
+
+    <TextView
+        android:id="@+id/tickets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/prices"
+
+        android:layout_marginTop="135dp"
+        android:textColor="@color/blacko"
+        android:text="Tickets"
+        android:textSize="24dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tic_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView2"
+        android:layout_alignTop="@+id/tickets"
+        android:text="Ticket" />
+</RelativeLayout>
