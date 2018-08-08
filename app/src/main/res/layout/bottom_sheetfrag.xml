@@ -9,6 +9,39 @@
     <!-- NOTE: This list should be displayed in a list
     instead of nested layouts -->
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="8dp">
+
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+        <com.ogalo.partympakache.wanlive.WanImageView
+            android:id="@+id/wanImage"
+            android:layout_width="match_parent"
+            android:layout_height="199dp"
+            android:layout_alignParentStart="true"
+
+
+            android:layout_alignParentTop="true"
+
+            android:background="@color/black_overlay"
+            android:focusable="false"
+            android:scaleType="fitXY"
+            android:visibility="visible" />
+</RelativeLayout>
+
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,8 +61,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="Title"
-            android:textColor="#737373"
-            android:textSize="16sp" />
+            android:textStyle="bold"
+            android:textColor="@color/blacko"
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -53,8 +87,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="Content"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+
+            android:textStyle="italic"
             android:textColor="#737373"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
     </LinearLayout>
 
@@ -72,12 +112,13 @@
       
 
         <TextView
-            android:id="@+id/time"
+            android:id="@+id/timenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="Time"
             android:textColor="#737373"
+            android:textStyle="bold"
             android:textSize="16sp" />
 
     </LinearLayout>
@@ -95,7 +136,7 @@
 
 
         <RatingBar
-            android:id="@+id/myrating"
+            android:id="@+id/myratingu"
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -133,23 +174,34 @@
             <!--android:textColor="#737373"-->
             <!--android:textSize="16sp" />-->
     </LinearLayout>
-<RelativeLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="1dp">
 
-    <Button
-        android:id="@+id/view"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:baselineAligned="true"
 
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="57dp"
-        android:background="@drawable/bg_greenf"
-        android:text="View Details"
-        android:textColor="@color/white" />
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="8dp">
 
-</RelativeLayout>
+
+        <Button
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/bg_greenf"
+            android:text="View Details"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+
 </LinearLayout>

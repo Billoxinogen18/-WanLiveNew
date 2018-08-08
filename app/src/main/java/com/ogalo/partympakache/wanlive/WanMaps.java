@@ -53,6 +53,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.ogalo.partympakache.wanlive.adapter.WanAdapter;
 import com.ogalo.partympakache.wanlive.app.AppController;
 import com.ogalo.partympakache.wanlive.data.Model1;
 import com.ogalo.partympakache.wanlive.data.WanItem;
@@ -68,6 +69,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -78,6 +80,7 @@ public class WanMaps extends AppCompatActivity
         implements OnMapReadyCallback {
 
     Bundle intent;
+    private List<WanItem> markerItems=new ArrayList<WanItem>();
     public double latitude;
     public String ratingso;
     public  String timeso;
@@ -86,11 +89,15 @@ public class WanMaps extends AppCompatActivity
     public LocationManager locationManager;
     public String titleso;
     public String contentso;
+
+    public String imgso;
+    public String costso;
+
+
     public Criteria criteria;
     public String bestProvider;
-    private List<WanItem> feedItems;
-    private String URL_FEED = "http://www.wayawaya.co.ke/wayawaya.co.ke/bill/wanlive/wanlive_thebalanceofdestiny.json";
 
+    private String URL_FEED = "http://www.wayawaya.co.ke/wayawaya.co.ke/bill/wanlive/wanlive_thebalanceofdestiny.json";
 
 
 
@@ -104,6 +111,8 @@ public class WanMaps extends AppCompatActivity
     private Button logout;
     private FirebaseAuth mAuth;
     private Button places;
+    private String latits;
+    private String longits;
     // The entry points to the Places API.
     private GeoDataClient mGeoDataClient;
     private PlaceDetectionClient mPlaceDetectionClient;
@@ -693,6 +702,9 @@ public class WanMaps extends AppCompatActivity
                 item.setLongitude(feedObj.getString("longitude"));
 
 
+                markerItems.add(item);
+
+
 
                 Double latitude=Double.parseDouble(feedObj.getString("latitude"));
                 Double longitude=Double.parseDouble(feedObj.getString("longitude"));
@@ -705,6 +717,7 @@ public class WanMaps extends AppCompatActivity
                 Double lowmid=2.0;
                 Double low=1.0;
                 Double what=0.0;
+                String io=Integer.toString(i);
 
 
                 LatLng latLng = new LatLng(latitude,
@@ -730,7 +743,8 @@ public class WanMaps extends AppCompatActivity
                     mMap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                             .title(feedObj.getString("name"))
-                            .snippet(feedObj.getString("matime"))
+//                            .snippet(feedObj.getString("matime"))
+                            .snippet(io)
 
                             .position(latLng));
 
@@ -749,7 +763,7 @@ public class WanMaps extends AppCompatActivity
                         mMap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                                 .title(feedObj.getString("name"))
-                                .snippet(feedObj.getString("matime"))
+                                .snippet(io)
                                 .position(latLng));
 
 
@@ -761,7 +775,7 @@ public class WanMaps extends AppCompatActivity
                         mMap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
                                 .title(feedObj.getString("name"))
-                                .snippet(feedObj.getString("matime"))
+                                .snippet(io)
                                 .position(latLng));
 
 
@@ -773,7 +787,7 @@ public class WanMaps extends AppCompatActivity
                         mMap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                                 .title(feedObj.getString("name"))
-                                .snippet(feedObj.getString("matime"))
+                                .snippet(io)
                                 .position(latLng));
 
 
@@ -785,7 +799,7 @@ public class WanMaps extends AppCompatActivity
                         mMap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                                 .title(feedObj.getString("name"))
-                                .snippet(feedObj.getString("matime"))
+                                .snippet(io)
                                 .position(latLng));
 
 
@@ -796,7 +810,7 @@ public class WanMaps extends AppCompatActivity
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                             .title(feedObj.getString("name"))
 
-                            .snippet(feedObj.getString("matime"))
+                            .snippet(io)
                             .position(latLng));
 
 
@@ -832,18 +846,32 @@ public class WanMaps extends AppCompatActivity
 
                         TextView tSnippet = (TextView) v.findViewById(R.id.population);
 
+                        Integer posis=Integer.parseInt(arg0.getSnippet());
+
+
+                        WanItem billistired=markerItems.get(posis);
 
                         tLocation.setText(arg0.getTitle());
+                        setContentso(billistired.getStatus());
+                        setTitleso(billistired.getName());
+                        setTimeso(billistired.getTimes());
+                        setRatingso(billistired.getRating());
+                        setImgso(billistired.getImge());
+                        setLatits(billistired.getLatitude());
+                        setLongits(billistired.getLongitude());
+                        setCostso(billistired.getCost());
+
+
 
 
                         setTitleso(arg0.getTitle());
 
-setContentso(arg0.getSnippet());
 
 
 
 
-                        tSnippet.setText(arg0.getSnippet());
+
+                        tSnippet.setText(billistired.getTimes());
 
 //                        Toast.makeText(WanMaps.this, "Title is "+titleso, Toast.LENGTH_SHORT).show();
 
@@ -961,6 +989,55 @@ setContentso(arg0.getSnippet());
         this.titleso=titleso;
 
     }
+
+
+
+    public void setImgso(String imgso)
+    {
+        this.imgso=imgso;
+
+    }
+    public String getImgso()
+    {
+        return imgso;
+    }
+
+
+    public void setCostso(String costso)
+    {
+        this.costso=costso;
+
+    }
+    public String getCostso()
+    {
+        return costso;
+    }
+
+
+    public void setLatits(String latits)
+    {
+        this.latits=latits;
+
+    }
+    public String getLatits()
+    {
+        return latits;
+    }
+
+
+
+    public void setLongits(String longits)
+    {
+        this.longits=longits;
+
+    }
+    public String getLongits()
+    {
+        return longits;
+    }
+
+
+
 
     public void setContentso(String contentso)
     {
