@@ -104,7 +104,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         WanMaps myActiv=(WanMaps)getActivity();
         final String title=myActiv.getTitleso();
         final String contents=myActiv.getContentso();
-        final Float ratingss=Float.parseFloat(myActiv.getRatingso());
+        final String ratingss=myActiv.getRatingso();
         final String time=myActiv.getTimeso();
         final String imge=myActiv.getImgso();
         final String costso=myActiv.getCostso();
@@ -186,6 +186,11 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         });
         WanItem wanItems=new WanItem();
 
+        Boolean truth=toggleButton.isChecked();
+        final String trun=truth.toString();
+
+
+
 //        Toast.makeText(getContext(), "Try "+wanItems.getUrl(), Toast.LENGTH_SHORT).show();
 
 
@@ -195,7 +200,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             public void onClick(View v) {
 
                 Intent i=new Intent(getContext(), DetailsActivity.class);
-                i.putExtra("checkeds", toggleButton.isChecked());
+                i.putExtra("checkeds", trun);
                 i.putExtra("longitude", longitude);
                 i.putExtra("status", contents);
                 i.putExtra("latitude", latitude);
@@ -218,7 +223,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
 
         times.setText(time);
-ratingBar.setRating(ratingss);
+ratingBar.setRating(Float.parseFloat(ratingss));
 
 
         titl.setText(title);
