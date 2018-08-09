@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/bottom"
     android:paddingBottom="8dp"
+    android:background="@android:color/transparent"
+
     android:paddingTop="8dp">
 
     <!-- NOTE: This list should be displayed in a list
     instead of nested layouts -->
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/imageviw"
+        android:layout_height="wrap_content"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
+
+
         android:orientation="horizontal"
         android:paddingBottom="8dp"
         android:paddingLeft="10dp"
@@ -23,6 +33,7 @@
 
 <RelativeLayout
     android:layout_width="wrap_content"
+    android:background="@color/transpar"
     android:layout_height="wrap_content">
 
         <com.ogalo.partympakache.wanlive.WanImageView
@@ -45,8 +56,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/transpar"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
+
         android:orientation="horizontal"
         android:paddingBottom="8dp"
         android:paddingLeft="10dp"
@@ -59,11 +71,23 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/transpar"
             android:layout_gravity="center_vertical"
             android:text="Title"
             android:textStyle="bold"
             android:textColor="@color/blacko"
             android:textSize="14sp" />
+
+        <ToggleButton
+            android:id="@+id/toggleSheet"
+            android:layout_width="0.00001dp"
+            android:layout_height="0.0001dp"
+
+            android:background="@color/transpar"
+            android:textOff=""
+            android:textOn=""
+
+            android:text="" />
 
     </LinearLayout>
 
@@ -72,7 +96,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
+        android:background="@color/transpar"
+
         android:orientation="horizontal"
         android:paddingBottom="8dp"
         android:paddingLeft="10dp"
@@ -88,6 +113,7 @@
             android:layout_gravity="center_vertical"
             android:text="Content"
             android:paddingLeft="30dp"
+            android:background="@color/transpar"
             android:paddingRight="30dp"
             android:singleLine="true"
             android:ellipsize="end"
@@ -101,8 +127,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/transpar"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
+
         android:orientation="horizontal"
         android:paddingBottom="8dp"
         android:paddingLeft="10dp"
@@ -127,9 +154,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
+
+
         android:orientation="horizontal"
         android:paddingBottom="8dp"
+        android:background="@color/transpar"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="8dp">
@@ -137,6 +166,7 @@
 
         <RatingBar
             android:id="@+id/myratingu"
+            android:background="@color/transpar"
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -156,8 +186,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/transpar"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
+
         android:orientation="horizontal"
         android:paddingBottom="8dp"
         android:paddingLeft="10dp"
@@ -180,9 +211,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:baselineAligned="true"
-
+        android:background="@color/transpar"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
+
         android:orientation="horizontal"
         android:paddingBottom="8dp"
         android:paddingLeft="10dp"
@@ -195,6 +226,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
 
+
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:background="@drawable/bg_greenf"
@@ -202,6 +234,6 @@
             android:textColor="@color/white" />
 
     </LinearLayout>
+    </LinearLayout>
 
-
-</LinearLayout>
+</ScrollView>

@@ -40,6 +40,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.ogalo.partympakache.wanlive.utils.DateUtils;
 import com.ogalo.partympakache.wanlive.utils.FileUtils;
 import com.ogalo.partympakache.wanlive.utils.ImageUtils;
@@ -57,6 +58,8 @@ import java.util.TimeZone;
 
 
 public class SettingsActivity extends AppCompatActivity {
+
+    private FirebaseAuth mAuth;
 
     private static final int INTENT_REQUEST_CHOOSE_MEDIA = 0xf0;
     private static final int INTENT_REQUEST_CAMERA = 0xf1;
@@ -83,6 +86,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private SwitchCompat mSwitchNotificationsDoNotDisturb;
     private LinearLayout mLinearLayoutDoNotDisturb;
+    private LinearLayout mLinearLayoutlogouts;
     private LinearLayout mLinearLayoutNotificationsDoNotDisturbFrom;
     private LinearLayout mLinearLayoutNotificationsDoNotDisturbTo;
     private TextView mTextViewNotificationsDoNotDisturbFrom;
@@ -99,6 +103,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        mAuth = FirebaseAuth.getInstance();
+
         mIMM = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         mCalendar = Calendar.getInstance(Locale.getDefault());
 
@@ -114,6 +120,8 @@ public class SettingsActivity extends AppCompatActivity {
         mImageViewProfile = (ImageView) findViewById(R.id.image_view_profile);
         mEditTextNickname = (EditText) findViewById(R.id.edit_text_nickname);
         mButtonSaveNickName = (Button) findViewById(R.id.button_save_nickname);
+
+        mLinearLayoutlogouts = (LinearLayout) findViewById(R.id.logouts);
 
         mLinearLayoutNotifications = (LinearLayout) findViewById(R.id.linear_layout_notifications);
         mSwitchNotifications = (SwitchCompat) findViewById(R.id.switch_notifications);
@@ -134,6 +142,30 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(SettingsActivity.this, BlockedMembersListActivity.class);
                 startActivity(intent);
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        mLinearLayoutlogouts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                disconnect();
             }
         });
 
@@ -637,5 +669,36 @@ public class SettingsActivity extends AppCompatActivity {
         Snackbar snackbar = Snackbar.make(mSettingsLayout, text, Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
+
+
+
+
+    private void disconnect() {
+        SendBird.unregisterPushTokenAllForCurrentUser(new SendBird.UnregisterPushTokenHandler() {
+            @Override
+            public void onUnregistered(SendBirdException e) {
+                if (e != null) {
+                    // Error!
+                    e.printStackTrace();
+
+                    // Don't return because we still need to disconnect.
+                } else {
+//                    Toast.makeText(MainActivity.this, "All push tokens unregistered.", Toast.LENGTH_SHORT).show();
+                }
+
+                ConnectionManager.logout(new SendBird.DisconnectHandler() {
+                    @Override
+                    public void onDisconnected() {
+                        PreferenceUtils.setConnected(false);
+                        mAuth.signOut();
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+            }
+        });
+    }
+
 
 }

@@ -7,9 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
+import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,15 +53,29 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
         uid = current_user.getUid();
 
+
+
+
+
+
+
+
+
+
         View becauseRailaIsGod=inflater.inflate(R.layout.bottom_sheetfrag, container, false);
 
+        ScrollView bottom=(ScrollView) becauseRailaIsGod.findViewById(R.id.bottom);
+        LinearLayout imag=(LinearLayout)becauseRailaIsGod.findViewById(R.id.imageviw);
+        String num="0.3";
 
+//        bottom.setAlpha(Float.parseFloat(num));
         TextView titl=(TextView)becauseRailaIsGod.findViewById(R.id.title);
         final TextView times=(TextView)becauseRailaIsGod.findViewById(R.id.timenu);
         RatingBar ratingBar=(RatingBar)becauseRailaIsGod.findViewById(R.id.myratingu);
         TextView content=(TextView)becauseRailaIsGod.findViewById(R.id.status);
         Button view=(Button)becauseRailaIsGod.findViewById(R.id.view);
         WanImageView wanImageView=(WanImageView)becauseRailaIsGod.findViewById(R.id.wanImage);
+        final ToggleButton toggleButton=(ToggleButton)becauseRailaIsGod.findViewById(R.id.toggleSheet);
 
 
 
@@ -95,6 +113,31 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
         Boolean trus;
 
+
+
+
+
+
+        firebref.child("user-favos").child(uid).child(title).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists())
+                {
+
+                    toggleButton.setChecked(true);
+                }
+                else
+                {
+                    toggleButton.setChecked(false);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
 
@@ -143,7 +186,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         });
         WanItem wanItems=new WanItem();
 
-        Toast.makeText(getContext(), "Try "+wanItems.getUrl(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "Try "+wanItems.getUrl(), Toast.LENGTH_SHORT).show();
 
 
 
@@ -152,7 +195,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             public void onClick(View v) {
 
                 Intent i=new Intent(getContext(), DetailsActivity.class);
-                i.putExtra("checkeds", ischeckedn);
+                i.putExtra("checkeds", toggleButton.isChecked());
                 i.putExtra("longitude", longitude);
                 i.putExtra("status", contents);
                 i.putExtra("latitude", latitude);

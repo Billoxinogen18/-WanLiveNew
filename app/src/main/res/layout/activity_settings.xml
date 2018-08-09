@@ -380,6 +380,54 @@
 
                 </LinearLayout>
 
+
+
+
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="17.5dp"
+                    android:background="#e6e6e6" />
+
+                <LinearLayout
+                    android:id="@+id/logouts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="15dp"
+                    android:paddingLeft="21dp"
+                    android:paddingRight="20dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="16dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="Log Out"
+                        android:textColor="#1b1d1d"
+                        android:textSize="14sp"
+                        android:textStyle="bold"/>
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="12dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/logsout" />
+
+                </LinearLayout>
+
+
+
+
+
+
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="17.5dp"

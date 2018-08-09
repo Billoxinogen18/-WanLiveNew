@@ -12,6 +12,8 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -44,17 +46,21 @@ import java.util.Map;
 
 public class WanAdapter extends BaseAdapter {
     private String uid;
+    Animation scaleUp;
     private DatabaseReference mDatabase;
     private DatabaseReference firebref;
 	private Activity activity;
 	private LayoutInflater inflater;
+    private int lastPosition = -1;
 	private List<WanItem> wanItems;
 	ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
 	public WanAdapter(Activity activity, List<WanItem> wanItems) {
 		this.activity = activity;
 		this.wanItems = wanItems;
-	}
+
+
+    }
 
 	@Override
 	public int getCount() {
@@ -74,11 +80,19 @@ public class WanAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
-		if (inflater == null)
+        scaleUp= AnimationUtils.loadAnimation(activity, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+
+
+
+        if (inflater == null)
 			inflater = (LayoutInflater) activity
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+
 		if (convertView == null)
 			convertView = inflater.inflate(R.layout.feetitemnew, null);
+        convertView.startAnimation(scaleUp);
+        lastPosition = position;
 
 		if (imageLoader == null)
 			imageLoader = AppController.getInstance().getImageLoader();
@@ -153,6 +167,27 @@ public class WanAdapter extends BaseAdapter {
             }
         });
 
+        firebref.child("reserved").child(uid).child(item.getName()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists())
+                {
+                    toggla.setBackgroundResource(R.drawable.bg_greenf);
+                    toggla.setChecked(true);
+                }
+                else
+                {
+                    toggla.setChecked(false);
+                    toggla.setBackgroundResource(R.drawable.bg_greenreal);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
 
 
@@ -169,7 +204,7 @@ public class WanAdapter extends BaseAdapter {
 
 
 
-
+                    writePost(uid, item.getStatus(), item.getName(), item.getCost(), item.getRating());
 
 //                    writeNewPost(uid, item.getStatus(), item.getName(), item.getCost(), item.getRating());
                     toggla.setBackgroundResource(R.drawable.bg_greenf);
@@ -179,7 +214,8 @@ public class WanAdapter extends BaseAdapter {
                     // The toggle is enabled means "like" in your case // call api for like
                 } else if
                         (!isChecked){
-
+                    mDatabase.child("reserved-universal").child(item.getName()).removeValue();
+                    mDatabase.child("reserved").child(uid).child(item.getName()).removeValue();
 //                    mDatabase.child("favos").child(item.getName()).removeValue();
 //                    mDatabase.child("user-favos").child(uid).child(item.getName()).removeValue();
                     item.setChecked(false);
@@ -379,6 +415,9 @@ buy.setText("Buy");
 		if (item.getImge() != null) {
 			feedImageView.setImageUrl(item.getImge(), imageLoader);
 			feedImageView.setVisibility(View.VISIBLE);
+            String num="0.3";
+            feedImageView.setAlpha(Float.parseFloat(num));
+
 			feedImageView
 					.setResponseObserver(new WanImageView.ResponseObserver() {
 						@Override
@@ -395,6 +434,33 @@ buy.setText("Buy");
 
 		return convertView;
 	}
+
+
+
+
+
+
+
+
+
+    private void writePost(String userId, String username, String title, String body, String rating) {
+        // Create new post at /user-posts/$userid/$postid and at
+        // /posts/$postid simultaneously
+        mDatabase=FirebaseDatabase.getInstance().getReference();
+        String key = mDatabase.child("posts").push().getKey();
+        Post post = new Post(userId, username, title, body,  rating);
+        Map<String, Object> postValues = post.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/reserved-universal/" + title, postValues);
+        childUpdates.put("/reserved/" + userId + "/" + title, postValues);
+
+        mDatabase.updateChildren(childUpdates);
+    }
+
+
+
+
 
 
     private void writeNewPost(String userId, String username, String title, String body, String rating) {

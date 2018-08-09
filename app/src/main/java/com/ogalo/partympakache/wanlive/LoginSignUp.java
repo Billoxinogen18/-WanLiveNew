@@ -1,6 +1,9 @@
 package com.ogalo.partympakache.wanlive;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -27,6 +30,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.ogalo.partympakache.wanlive.groupchannel.GroupChannelActivity;
 import com.ogalo.partympakache.wanlive.utils.PreferenceUtils;
 import com.ogalo.partympakache.wanlive.utils.PushUtils;
@@ -75,6 +79,20 @@ public class LoginSignUp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_sign_up);
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(ConstantsClass.CHANNEL_ID, ConstantsClass.CHANNEL_NAME, importance);
+            mChannel.setDescription(ConstantsClass.CHANNEL_DESCRIPTION);
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.RED);
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mNotificationManager.createNotificationChannel(mChannel);
+        }
 
 
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
@@ -163,6 +181,10 @@ public class LoginSignUp extends AppCompatActivity {
         mProgressBar = (ContentLoadingProgressBar) findViewById(R.id.progress_bar_login);
 
         // Display current SendBird and app versions in a TextView
+
+
+//        WanNotificationManager.getInstance(this).displayNotification("WanLive", "WanLive Update");
+
 
     }
 
