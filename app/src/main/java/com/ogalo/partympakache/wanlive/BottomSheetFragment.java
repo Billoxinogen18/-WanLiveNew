@@ -1,11 +1,21 @@
 package com.ogalo.partympakache.wanlive;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.renderscript.Allocation;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
@@ -32,6 +42,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
     private DatabaseReference mDatabase;
+    private TextView times;
+    private  View becauseRailaIsGod;
     private DatabaseReference firebref;
     public BottomSheetFragment() {
         // Required empty public constructor
@@ -41,6 +53,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
     }
 
     @Override
@@ -62,7 +76,12 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
 
 
-        View becauseRailaIsGod=inflater.inflate(R.layout.bottom_sheetfrag, container, false);
+        becauseRailaIsGod=inflater.inflate(R.layout.bottom_sheetfrag, container, false);
+
+//        ((View) becauseRailaIsGod.getParent()).setBackgroundColor(Color.TRANSPARENT);
+
+
+
 
         ScrollView bottom=(ScrollView) becauseRailaIsGod.findViewById(R.id.bottom);
         LinearLayout imag=(LinearLayout)becauseRailaIsGod.findViewById(R.id.imageviw);
@@ -70,7 +89,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
 //        bottom.setAlpha(Float.parseFloat(num));
         TextView titl=(TextView)becauseRailaIsGod.findViewById(R.id.title);
-        final TextView times=(TextView)becauseRailaIsGod.findViewById(R.id.timenu);
+        times=(TextView)becauseRailaIsGod.findViewById(R.id.timenu);
         RatingBar ratingBar=(RatingBar)becauseRailaIsGod.findViewById(R.id.myratingu);
         TextView content=(TextView)becauseRailaIsGod.findViewById(R.id.status);
         Button view=(Button)becauseRailaIsGod.findViewById(R.id.view);
@@ -228,12 +247,18 @@ ratingBar.setRating(Float.parseFloat(ratingss));
 
         titl.setText(title);
         content.setText(contents);
+
+        applyBlur();
 //        String contentso=myActiv.getContentso();
 //
 //        Toast.makeText(getContext(), title, Toast.LENGTH_SHORT).show();
 
 
         return becauseRailaIsGod;
+
+
+
+
     }
 
     public void setIschecked(String ischeckedn)
@@ -251,5 +276,74 @@ ratingBar.setRating(Float.parseFloat(ratingss));
 
         return true;
     }
+
+
+
+
+    private void applyBlur() {
+        final String text="Test";
+        becauseRailaIsGod.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                becauseRailaIsGod.getViewTreeObserver().removeOnPreDrawListener(this);
+                becauseRailaIsGod.buildDrawingCache();
+
+                Bitmap bmp =   becauseRailaIsGod.getDrawingCache();
+                blur(bmp, times);
+                return true;
+            }
+        });
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void blur(Bitmap bkg, View view) {
+        long startMs = System.currentTimeMillis();
+
+        float radius = 25;
+
+        Bitmap overlay = Bitmap.createBitmap((int) (view.getMeasuredWidth()),
+                (int) (view.getMeasuredHeight()), Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(overlay);
+
+        canvas.translate(-view.getLeft(), -view.getTop());
+        canvas.drawBitmap(bkg, 0, 0, null);
+
+        RenderScript rs = RenderScript.create(getContext());
+
+        Allocation overlayAlloc = Allocation.createFromBitmap(
+                rs, overlay);
+
+        ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(
+                rs, overlayAlloc.getElement());
+
+        blur.setInput(overlayAlloc);
+
+        blur.setRadius(radius);
+
+        blur.forEach(overlayAlloc);
+
+        overlayAlloc.copyTo(overlay);
+
+        view.setBackground(new BitmapDrawable(
+                getResources(), overlay));
+
+        rs.destroy();
+//        times.setText(System.currentTimeMillis() - startMs + "ms");
+    }
+
+    @Override
+    public String toString() {
+        return "RenderScript";
+    }
+
+    private TextView addStatusText(ViewGroup container) {
+        TextView result = new TextView(getContext());
+        result.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        result.setTextColor(0xFFFFFFFF);
+        container.addView(result);
+        return result;
+    }
+
 
     }

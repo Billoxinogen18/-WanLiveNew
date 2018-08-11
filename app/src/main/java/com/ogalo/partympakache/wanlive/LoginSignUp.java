@@ -22,6 +22,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Cache;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -31,6 +37,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.ogalo.partympakache.wanlive.app.AppController;
+import com.ogalo.partympakache.wanlive.data.WanItem;
 import com.ogalo.partympakache.wanlive.groupchannel.GroupChannelActivity;
 import com.ogalo.partympakache.wanlive.utils.PreferenceUtils;
 import com.ogalo.partympakache.wanlive.utils.PushUtils;
@@ -39,11 +47,24 @@ import com.sendbird.android.SendBird;
 import com.sendbird.android.SendBirdException;
 import com.sendbird.android.User;
 
-import java.util.HashMap;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class LoginSignUp extends AppCompatActivity {
+    private String URL_FEED = "http://www.wayawaya.co.ke/wayawaya.co.ke/bill/wanlive/wanlive_thebalanceofdestiny.json";
+
+
+
+    private static final String TAG = WanMaps.class.getSimpleName();
+
+    private List<WanItem> markerItems=new ArrayList<WanItem>();;
 
     private DatabaseReference mDatabase;
     private RelativeLayout mLoginLayout;
@@ -79,7 +100,26 @@ public class LoginSignUp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_sign_up);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+
+
+
 
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -191,6 +231,58 @@ public class LoginSignUp extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+
+
+        Cache cache = AppController.getInstance().getRequestQueue().getCache();
+        Cache.Entry entry = cache.get(URL_FEED);
+        if (entry != null) {
+            // fetch the data from cache
+            try {
+
+                String data = new String(entry.data, "UTF-8");
+
+                try {
+                    parseJsonFeed(new JSONObject(data));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            // making fresh volley request and getting json
+            JsonObjectRequest jsonReq = new JsonObjectRequest(Request.Method.GET,
+                    URL_FEED, null, new Response.Listener<JSONObject>() {
+
+                @Override
+                public void onResponse(JSONObject response) {
+                    VolleyLog.d(TAG, "Response: " + response.toString());
+                    if (response != null) {
+                        parseJsonFeed(response);
+                    }
+                }
+            }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d(TAG, "Error: " + error.getMessage());
+                }
+            });
+
+            // Adding request to volley request queue
+            AppController.getInstance().addToRequestQueue(jsonReq);
+        }
+
+
+
+
+
+
+
+
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(PreferenceUtils.getConnected()&&currentUser!=null) {
@@ -248,7 +340,12 @@ public class LoginSignUp extends AppCompatActivity {
                 updateCurrentUserPushToken();
 
                 // Proceed to MainActivity
+                WanItem wanItem=new WanItem();
+
                 Intent intent = new Intent(getApplicationContext(), WanMaps.class);
+                intent.putExtra("latitude",wanItem.getLatitude());
+                intent.putExtra("longitude", wanItem.getLongitude());
+
 
                 startActivity(intent);
                 pDialog.dismissWithAnimation();
@@ -364,6 +461,83 @@ public class LoginSignUp extends AppCompatActivity {
             }
         });
 
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private void parseJsonFeed(JSONObject response) {
+        try {
+
+            mRegProgress.setTitle("WanLive");
+            mRegProgress.setMessage("Loading Feed");
+
+            mRegProgress.setCanceledOnTouchOutside(false);
+            mRegProgress.show();
+            JSONArray feedArray = response.getJSONArray("feed");
+
+            for (int i = 0; i < feedArray.length(); i++) {
+                JSONObject feedObj = (JSONObject) feedArray.get(i);
+
+                WanItem item = new WanItem();
+                item.setId(feedObj.getInt("id"));
+                item.setName(feedObj.getString("name"));
+//                Toast.makeText(this, ischecked, Toast.LENGTH_SHORT).show();
+                item.setCost(feedObj.getString("cost"));
+
+                item.setTimes(feedObj.getString("matime"));
+                item.setStatus(feedObj.getString("status"));
+
+                item.setRating(feedObj.getString("rating"));
+                item.setLatitude(feedObj.getString("latitude"));
+                item.setLongitude(feedObj.getString("longitude"));
+
+                String longitudef=feedObj.getString("latitude");
+//                 String longituded=feedObj.getString("longitude");
+//                Toast.makeText(this, item.getLatitude(), Toast.LENGTH_SHORT).show();
+
+
+
+                String name=feedObj.getString("name");
+                String longitude=feedObj.getString("longitude");
+
+
+
+
+                // Image might be null sometimes
+                String image = feedObj.isNull("image") ? null : feedObj
+                        .getString("image");
+                item.setImge(image);
+
+                item.setProfilePic(feedObj.getString("profilePic"));
+                item.setTimeStamp(feedObj.getString("timeStamp"));
+                item.setTimeStamp(feedObj.getString("timeStamp"));
+
+                // url might be null sometimes
+                String feedUrl = feedObj.isNull("url") ? null : feedObj
+                        .getString("location");
+                item.setUrl(feedUrl);
+                String io=Integer.toString(i);
+
+
+                markerItems.add(item);
+            }
+
+            // notify data changes to list adapater
+
+            mRegProgress.dismiss();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 package com.ogalo.partympakache.wanlive.groupchannel;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -57,6 +58,7 @@ class GroupChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private ConcurrentHashMap<String, Integer> mChannelImageNumMap;
     private ConcurrentHashMap<String, ImageView> mChannelImageViewMap;
     private ConcurrentHashMap<String, SparseArray<Bitmap>> mChannelBitmapMap;
+    private ImageView setting;
 
     private OnItemClickListener mItemClickListener;
     private OnItemLongClickListener mItemLongClickListener;
@@ -159,9 +161,28 @@ class GroupChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_group_channel, parent, false);
+
+
+
+
         return new ChannelHolder(view);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -225,6 +246,7 @@ class GroupChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         MultiImageView coverImage;
         LinearLayout typingIndicatorContainer;
 
+
         ChannelHolder(View itemView) {
             super(itemView);
 
@@ -234,10 +256,17 @@ class GroupChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             dateText = (TextView) itemView.findViewById(R.id.text_group_channel_list_date);
             memberCountText = (TextView) itemView.findViewById(R.id.text_group_channel_list_member_count);
             coverImage = (MultiImageView) itemView.findViewById(R.id.image_group_channel_list_cover);
-            coverImage.setShape(MultiImageView.Shape.CIRCLE);
+
+            coverImage.setShape(MultiImageView.Shape.RECTANGLE);
+
+
+
 
             typingIndicatorContainer = (LinearLayout) itemView.findViewById(R.id.container_group_channel_list_typing_indicator);
         }
+
+
+
 
         /**
          * Binds views in the ViewHolder to information contained within the Group Channel.

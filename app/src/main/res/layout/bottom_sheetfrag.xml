@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:id="@+id/bottom"
     android:paddingBottom="8dp"
+
     android:background="@android:color/transparent"
 
     android:paddingTop="8dp">
@@ -15,10 +16,24 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+
         android:orientation="vertical">
 
 
-    <LinearLayout
+
+
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transpar"
+            />
+
+
+
+
+        <LinearLayout
         android:layout_width="match_parent"
         android:id="@+id/imageviw"
         android:layout_height="wrap_content"
@@ -75,7 +90,7 @@
             android:layout_gravity="center_vertical"
             android:text="Title"
             android:textStyle="bold"
-            android:textColor="@color/blacko"
+            android:textColor="@color/white"
             android:textSize="14sp" />
 
         <ToggleButton
@@ -113,13 +128,14 @@
             android:layout_gravity="center_vertical"
             android:text="Content"
             android:paddingLeft="30dp"
+            android:textColor="@color/gallery_grey"
             android:background="@color/transpar"
             android:paddingRight="30dp"
             android:singleLine="true"
             android:ellipsize="end"
 
             android:textStyle="italic"
-            android:textColor="#737373"
+
             android:textSize="15sp" />
 
     </LinearLayout>
@@ -144,7 +160,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="Time"
-            android:textColor="#737373"
+            android:textColor="@color/gallery_white"
             android:textStyle="bold"
             android:textSize="16sp" />
 
@@ -224,7 +240,7 @@
         <Button
             android:id="@+id/view"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="30dp"
 
 
             android:layout_alignParentBottom="true"
@@ -235,5 +251,7 @@
 
     </LinearLayout>
     </LinearLayout>
+
+
 
 </ScrollView>

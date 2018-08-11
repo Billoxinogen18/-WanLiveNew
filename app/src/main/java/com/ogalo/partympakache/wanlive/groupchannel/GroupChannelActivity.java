@@ -1,22 +1,44 @@
 package com.ogalo.partympakache.wanlive.groupchannel;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.ogalo.partympakache.wanlive.R;
+import com.ogalo.partympakache.wanlive.SettingsActivity;
 
 
 public class GroupChannelActivity extends AppCompatActivity{
     private Toolbar mToolbar;
+    private ImageView settingsan;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_channel);
+
+        settingsan = (ImageView)findViewById(R.id.settingss);
+
+        settingsan.setVisibility(View.VISIBLE);
+
+        settingsan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+               startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+
+            }
+        });
+
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_group_channel);
         setSupportActionBar(toolbar);
@@ -47,6 +69,11 @@ public class GroupChannelActivity extends AppCompatActivity{
                     .addToBackStack(null)
                     .commit();
         }
+
+
+
+
+
     }
 
     interface onBackPressedListener {
@@ -66,9 +93,14 @@ public class GroupChannelActivity extends AppCompatActivity{
         super.onBackPressed();
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+
+
 
         if (id == android.R.id.home) {
             onBackPressed();
@@ -83,4 +115,17 @@ public class GroupChannelActivity extends AppCompatActivity{
             getSupportActionBar().setTitle(title);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

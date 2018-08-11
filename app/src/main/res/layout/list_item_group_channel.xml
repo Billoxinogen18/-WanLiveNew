@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Anna Bluiasdfasdfasdfasdfasdfasdfasdfasdfafm" />
+            android:text="UnfairGamerLmao" />
 
         <TextView
             android:id="@+id/text_group_channel_list_member_count"
@@ -76,7 +76,7 @@
             android:textColor="#8e8e8e"
             android:ellipsize="end"
             android:maxLines="2"
-            android:text="This sounded nonsense to Alice, so she said nothing, but set off at her being blah blah" />
+            android:text="This sounded nonsense to Bill, so she said nothing, but set off at her being blah blah" />
 
     </LinearLayout>
 

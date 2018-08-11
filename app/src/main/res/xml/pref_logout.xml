@@ -1,0 +1,26 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="log_switch"
+        android:summary="You will be able to switch accounts easily by tapping on the user profile picture in the log in screen when this is enabled"
+        android:title="Enable saving Login details" />
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <EditTextPreference
+        android:capitalize="words"
+        android:id="@+id/logout"
+        android:defaultValue="Log Out"
+        android:inputType="textCapWords"
+        android:key="example_textlog"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Log Out" />
+
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+
+</PreferenceScreen>

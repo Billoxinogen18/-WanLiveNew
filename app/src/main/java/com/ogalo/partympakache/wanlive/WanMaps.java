@@ -195,12 +195,12 @@ public class WanMaps extends AppCompatActivity
 
 
 
-   places.setOnClickListener(new View.OnClickListener() {
-       @Override
-       public void onClick(View v) {
-           startActivity(new Intent(getApplicationContext(), MainFeed.class));
-       }
-   });
+        places.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), MainFeed.class));
+            }
+        });
 
 
 
@@ -230,7 +230,7 @@ public class WanMaps extends AppCompatActivity
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCurrentPlace();
+                disconnect();
             }
         });
 
@@ -252,10 +252,10 @@ public class WanMaps extends AppCompatActivity
 
 
 
-
-        Cache cache = AppController.getInstance().getRequestQueue().getCache();
+String bill="Bill";
+Cache cache = AppController.getInstance().getRequestQueue().getCache();
         Cache.Entry entry = cache.get(URL_FEED);
-        if (entry != null) {
+        if (entry != null && bill=="Bil") {
             // fetch the data from cache
             try {
 
@@ -759,52 +759,52 @@ public class WanMaps extends AppCompatActivity
 
                 }
                 else
-                    if(rates>=himidhi&&rates<hi){
+                if(rates>=himidhi&&rates<hi){
 
-                        mMap.addMarker(new MarkerOptions()
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                                .title(feedObj.getString("name"))
-                                .snippet(io)
-                                .position(latLng));
+                    mMap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                            .title(feedObj.getString("name"))
+                            .snippet(io)
+                            .position(latLng));
 
 
                 }
 
-                    else
-                    if(rates>=himid&&rates<himidhi){
+                else
+                if(rates>=himid&&rates<himidhi){
 
-                        mMap.addMarker(new MarkerOptions()
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-                                .title(feedObj.getString("name"))
-                                .snippet(io)
-                                .position(latLng));
-
-
-                    }
-
-                    else
-                    if(rates>=himidmid&&rates<himid){
-
-                        mMap.addMarker(new MarkerOptions()
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                                .title(feedObj.getString("name"))
-                                .snippet(io)
-                                .position(latLng));
+                    mMap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                            .title(feedObj.getString("name"))
+                            .snippet(io)
+                            .position(latLng));
 
 
-                    }
+                }
 
-                    else
-                    if(rates>=lowmid&&rates<himidmid){
+                else
+                if(rates>=himidmid&&rates<himid){
 
-                        mMap.addMarker(new MarkerOptions()
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
-                                .title(feedObj.getString("name"))
-                                .snippet(io)
-                                .position(latLng));
+                    mMap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                            .title(feedObj.getString("name"))
+                            .snippet(io)
+                            .position(latLng));
 
 
-                    }
+                }
+
+                else
+                if(rates>=lowmid&&rates<himidmid){
+
+                    mMap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                            .title(feedObj.getString("name"))
+                            .snippet(io)
+                            .position(latLng));
+
+
+                }
                 if(rates>=low&&rates<lowmid){
 
                     mMap.addMarker(new MarkerOptions()
@@ -897,20 +897,20 @@ public class WanMaps extends AppCompatActivity
                 });
 
 
-              mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                  @Override
-                  public void onInfoWindowClick(Marker marker) {
-                      WanItem itemo=new WanItem();
-                      Bundle intent=new Bundle();
-                      intent.putString("title", marker.getTitle());
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        WanItem itemo=new WanItem();
+                        Bundle intent=new Bundle();
+                        intent.putString("title", marker.getTitle());
 
-                      showBottomSheetDialogFragment();
-
-
+                        showBottomSheetDialogFragment();
 
 
-                  }
-              });
+
+
+                    }
+                });
 
                 String longitudef=feedObj.getString("latitude");
 //                 String longituded=feedObj.getString("longitude");
@@ -957,7 +957,7 @@ public class WanMaps extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-               showBottomSheetDialogFragment();
+                showBottomSheetDialogFragment();
 
 
 
@@ -979,8 +979,23 @@ public class WanMaps extends AppCompatActivity
 
     public void showBottomSheetDialogFragment() {
         BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
+
+
+
+
+        final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_container);
+
+
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) frameLayout.getLayoutParams();
+            //left, top, right, bottom
+
+
         bottomSheetFragment.setArguments(intent);
         bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
+
+//        params.setMargins(10, 0, 10, 0); //setting margin left to 10px
+        frameLayout.setLayoutParams(params);
+
     }
 
 
@@ -1091,7 +1106,6 @@ public class WanMaps extends AppCompatActivity
     {
         return titleso;
     }
-
 
 
 }

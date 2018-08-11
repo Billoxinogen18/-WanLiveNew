@@ -13,6 +13,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -20,6 +23,8 @@ import android.widget.Toast;
 
 import com.ogalo.partympakache.wanlive.ConnectionManager;
 import com.ogalo.partympakache.wanlive.R;
+import com.ogalo.partympakache.wanlive.SettingsActivity;
+import com.ogalo.partympakache.wanlive.WanSettings;
 import com.sendbird.android.BaseChannel;
 import com.sendbird.android.BaseMessage;
 import com.sendbird.android.GroupChannel;
@@ -349,5 +354,31 @@ public class GroupChannelListFragment extends Fragment {
                 refresh();
             }
         });
+    }
+
+
+
+
+
+
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menu_main) {
+            Intent intent = new Intent(getActivity(), WanSettings.class);
+
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

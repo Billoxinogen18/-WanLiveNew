@@ -10,12 +10,22 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
 
+
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_group_channel"
             android:layout_width="match_parent"
-            android:theme="@style/Toolbar"
             android:layout_height="?attr/actionBarSize"
+            android:theme="@style/Toolbar"
             app:popupTheme="@style/Theme.AppCompat.Light">
+
+            <ImageView
+                android:id="@+id/settingss"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="5dp"
+                android:layout_gravity="right"
+                app:srcCompat="@drawable/ic_settings_white_24_dp" />
 
         </android.support.v7.widget.Toolbar>
 

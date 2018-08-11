@@ -39,6 +39,7 @@ import android.widget.Toast;
 import com.ogalo.partympakache.wanlive.ConnectionManager;
 import com.ogalo.partympakache.wanlive.R;
 import com.ogalo.partympakache.wanlive.SettingsActivity;
+import com.ogalo.partympakache.wanlive.WanMaps;
 import com.ogalo.partympakache.wanlive.utils.FileUtils;
 import com.ogalo.partympakache.wanlive.utils.MediaPlayerActivity;
 import com.ogalo.partympakache.wanlive.utils.PhotoViewerActivity;
@@ -149,7 +150,10 @@ public class GroupChatFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_group_chat, container, false);
 
         setRetainInstance(true);
+        GroupChannelActivity myActiv=(GroupChannelActivity) getActivity();
 
+        View view = getActivity().findViewById(R.id.settingss);
+        view.setVisibility(View.GONE);
         mRootLayout = (RelativeLayout) rootView.findViewById(R.id.layout_group_chat_root);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_group_chat);
 
@@ -353,6 +357,9 @@ public class GroupChatFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+
+        View view = getActivity().findViewById(R.id.settingss);
+        view.setVisibility(View.VISIBLE);
         // Save messages to cache.
         mChatAdapter.save();
         super.onDestroy();

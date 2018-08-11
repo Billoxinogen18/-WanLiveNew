@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="@color/transpar"
+    android:id="@+id/fragment_container"
     android:layout_height="match_parent"
     tools:context=".MapActivity" >
 
@@ -47,7 +48,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignStart="@+id/message"
             android:layout_marginBottom="55dp"
-            android:src="@drawable/locator_icon" />
+            android:src="@drawable/logout" />
 
         <ImageView
             android:id="@+id/createmessage"
