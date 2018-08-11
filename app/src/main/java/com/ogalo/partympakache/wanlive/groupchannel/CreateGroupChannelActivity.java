@@ -17,7 +17,6 @@ import com.ogalo.partympakache.wanlive.utils.PreferenceUtils;
 import com.sendbird.android.GroupChannel;
 import com.sendbird.android.SendBirdException;
 
-
 import java.util.ArrayList;
 import java.util.List;
 

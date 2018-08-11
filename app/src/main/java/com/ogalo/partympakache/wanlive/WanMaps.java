@@ -172,7 +172,10 @@ public class WanMaps extends AppCompatActivity
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-
+        // Build the map.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.maps);
+        mapFragment.getMapAsync(this);
         // Construct a GeoDataClient.
         mGeoDataClient = Places.getGeoDataClient(this, null);
 
@@ -234,14 +237,11 @@ public class WanMaps extends AppCompatActivity
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                disconnect();
+//                disconnect();
             }
         });
 
-        // Build the map.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
 
 
 
@@ -690,6 +690,8 @@ public class WanMaps extends AppCompatActivity
 
 
                 final WanItem item = new WanItem();
+                Double latitude=Double.parseDouble(feedObj.getString("latitude"));
+                Double longitude=Double.parseDouble(feedObj.getString("longitude"));
                 item.setId(feedObj.getInt("id"));
                 item.setName(feedObj.getString("name"));
                 item.setCost(feedObj.getString("cost"));
@@ -706,8 +708,7 @@ public class WanMaps extends AppCompatActivity
 
 
 
-                Double latitude=Double.parseDouble(feedObj.getString("latitude"));
-                Double longitude=Double.parseDouble(feedObj.getString("longitude"));
+
                 String rating=item.getRating();
                 Double rates=Double.parseDouble(rating);
                 Double hi=4.5;
@@ -728,7 +729,7 @@ public class WanMaps extends AppCompatActivity
 
 
 
-                if (i == 0) {
+                if (i == feedArray.length()-1) {
                     CameraPosition cameraPosition = new CameraPosition.Builder()
                             .target(latLng).zoom(13).build();
 

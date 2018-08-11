@@ -51,7 +51,7 @@ public class SelectUserFragment extends Fragment{
 
         View rootView = inflater.inflate(R.layout.fragment_select_user, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_select_user);
-        mListAdapter = new SelectableUserListAdapter(getActivity(), false, false);
+        mListAdapter = new SelectableUserListAdapter(getActivity(), false, true);
 
         mListAdapter.setItemCheckedChangeListener(new SelectableUserListAdapter.OnItemCheckedChangeListener() {
             @Override

@@ -16,6 +16,8 @@ import com.sendbird.android.SendBird;
 
 
 public class AppController extends Application {
+
+
 	private static final String APP_ID = "1DBD9158-6017-402D-81A0-E1946A1AD546"; // US-1 Demo
 	public static final String VERSION = "3.0.40";
 
