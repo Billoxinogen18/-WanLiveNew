@@ -142,6 +142,18 @@ public class WanAdapter extends BaseAdapter {
 
 
 
+        if(item.getCost().equals("FREE"))
+        {
+            toggla.setVisibility(View.VISIBLE);
+            buy.setVisibility(View.GONE);
+
+
+
+
+        }
+
+
+
 
 
 
@@ -308,6 +320,7 @@ buy.setText("Buy");
         longitude.setText(item.getLongitude());
         latitude.setText(item.getLatitude());
         rating.setText(item.getRating());
+
 
 
         rates.setRating(Float.parseFloat(item.getRating()));

@@ -13,7 +13,7 @@
 
     <color name="twitter_light">#0084b4</color>
     <color name="google_plus">#D34836</color>
-    <color name="google_plus_light">#D2D2D2</color>
+    <color name="google_plus_light">#D6E5D2</color>
 
     <color name="linkedin_light">#0077b5</color>
     <color name="vk">#36638e</color>
@@ -43,7 +43,7 @@
     <color name="transpar">#00000000</color>
     <color name="black_over">#94000000</color>
     <color name="black_overla">#88000000</color>
-    <color name="white_overla">#77CCCCCC</color>
+    <color name="white_overla">#99CCCCCC</color>
     <color name="blacko">#ff000000</color>
     <color name="colorBlack">#000000</color>
     <color name="btn_login">#ff400080</color>

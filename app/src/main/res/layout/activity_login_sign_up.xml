@@ -37,7 +37,8 @@
             android:id="@+id/register_display_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:theme="@style/TextLabel"
+
             android:layout_marginTop="150dp"
             >
 
@@ -45,17 +46,16 @@
 
 
             <EditText
-
-               android:textStyle="bold"
+                android:textStyle="bold"
                 android:id="@+id/username"
                 android:textSize="16dp"
-
                 android:background="@drawable/bg_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-
-                android:text=""
                 android:padding="12dp"
+                android:text=""
+                android:textColorHint="@color/white"
+
                 android:hint="Username"
                 android:ems="10"
                 android:inputType="textPersonName" />
@@ -67,6 +67,7 @@
             android:id="@+id/register_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:theme="@style/TextLabel"
 
             android:layout_marginTop="220dp"
             >
@@ -79,6 +80,7 @@
                 android:layout_height="45dp"
                 android:padding="12dp"
                 android:text=""
+                android:textColorHint="@color/white"
 
                 android:hint="Email"
                 android:ems="10"
@@ -90,6 +92,7 @@
             android:id="@+id/reg_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:theme="@style/TextLabel"
             android:layout_marginTop="290dp"
             >
             <EditText
@@ -101,6 +104,7 @@
                 android:layout_height="45dp"
 
                 android:text=""
+                android:textColorHint="@color/white"
                 android:padding="12dp"
                 android:hint="Password"
                 android:ems="10"

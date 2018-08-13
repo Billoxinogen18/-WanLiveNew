@@ -2,6 +2,7 @@ package com.ogalo.partympakache.wanlive;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -25,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.ogalo.partympakache.wanlive.utils.PreferenceUtils;
 import com.ogalo.partympakache.wanlive.utils.PushUtils;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.sendbird.android.SendBird;
 import com.sendbird.android.SendBirdException;
 import com.sendbird.android.User;
@@ -55,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mEditText;
     private String display_name;
     private String userId;
+    private SweetAlertDialog pDialog;
     String userNickname;
 
 
@@ -67,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
 
 
         mRegProgress = new ProgressDialog(this);
@@ -123,10 +126,18 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(!TextUtils.isEmpty(email) || !TextUtils.isEmpty(password)){
 
-                    mRegProgress.setTitle("Logging in");
-                    mRegProgress.setMessage("Checking in");
-                    mRegProgress.setCanceledOnTouchOutside(false);
-                    mRegProgress.show();
+//                    mRegProgress.setTitle("Logging in");
+//                    mRegProgress.setMessage("Checking in");
+//                    mRegProgress.setCanceledOnTouchOutside(false);
+//                    mRegProgress.show();
+
+                    pDialog.getProgressHelper().setBarColor(Color.parseColor("#B21AAC"));
+                    pDialog.setTitleText("Logging In");
+                    pDialog.setContentText("Setting Profile");
+                    pDialog.setCancelable(false);
+                    pDialog.show();
+
+
                     loginUser(email, password);
 
                 }
@@ -188,7 +199,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), WanMaps.class);
 
                 startActivity(intent);
-                mRegProgress.dismiss();
+                pDialog.dismissWithAnimation();
                 finish();
             }
         });
@@ -234,7 +245,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 } else {
 
-                    mRegProgress.dismiss();
+                    pDialog.dismissWithAnimation();
 
                     String task_result = task.getException().getMessage().toString();
 

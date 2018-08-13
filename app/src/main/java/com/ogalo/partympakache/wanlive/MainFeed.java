@@ -155,9 +155,11 @@ public class MainFeed extends AppCompatActivity  {
 
 
         // We first check for cached request
+
+        String bill="Bill";
         Cache cache = AppController.getInstance().getRequestQueue().getCache();
         Cache.Entry entry = cache.get(URL_FEED);
-        if (entry != null) {
+        if (entry != null && bill=="Bil") {
             // fetch the data from cache
             try {
                 String data = new String(entry.data, "UTF-8");

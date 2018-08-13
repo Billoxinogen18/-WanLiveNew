@@ -228,12 +228,12 @@
 
 
             android:layout_alignTop="@+id/buy"
-            android:layout_marginEnd="102dp"
             android:background="@drawable/bg_greenreal"
 
 
             android:focusable="false"
             android:text=""
+            android:visibility="gone"
             android:textColor="@color/white"
             android:textOff="   Reserve   "
             android:textOn="   Reserved  "
