@@ -302,7 +302,7 @@ public class WanAdapter extends BaseAdapter {
 
 
 //        buy.setText("Buy tickets at "+item.getCost()+" /=");
-buy.setText("Buy");
+buy.setText("Buy Tickets");
 
 
 

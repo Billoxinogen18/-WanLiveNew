@@ -255,20 +255,31 @@ public class WanMaps extends AppCompatActivity
 String bill="Bill";
 Cache cache = AppController.getInstance().getRequestQueue().getCache();
         Cache.Entry entry = cache.get(URL_FEED);
-        if (entry != null && bill=="Bil") {
+        if (entry != null) {
             // fetch the data from cache
-            try {
 
-                String data = new String(entry.data, "UTF-8");
 
-                try {
-                    parseJsonFeed(new JSONObject(data));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+                JsonObjectRequest jsonReq = new JsonObjectRequest(Request.Method.GET,
+                        URL_FEED, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        VolleyLog.d(TAG, "Response: " + response.toString());
+                        if (response != null) {
+                            parseJsonFeed(response);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLog.d(TAG, "Error: " + error.getMessage());
+                    }
+                });
+
+                // Adding request to volley request queue
+                AppController.getInstance().addToRequestQueue(jsonReq);
+
 
         } else {
             // making fresh volley request and getting json
