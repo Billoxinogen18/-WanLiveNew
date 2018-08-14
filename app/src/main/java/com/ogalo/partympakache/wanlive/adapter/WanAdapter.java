@@ -315,7 +315,13 @@ buy.setText("Buy Tickets");
 		name.setText(item.getName());
 
         imge.setText(item.getImge());
-        cost.setText("Ksh. "+item.getCost());
+        if(item.getCost().equals("FREE")) {
+            cost.setText("" + item.getCost());
+        }
+        else
+        {
+            cost.setText("KSH. " + item.getCost());
+        }
         time.setText(item.getTimes());
         longitude.setText(item.getLongitude());
         latitude.setText(item.getLatitude());

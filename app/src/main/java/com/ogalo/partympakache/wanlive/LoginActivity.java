@@ -78,7 +78,9 @@ public class LoginActivity extends AppCompatActivity {
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
 
         mLoginEmail=(EditText) findViewById(R.id.city);
+        mLoginEmail.setText("");
         mLoginPassword=(EditText) findViewById(R.id.pass);
+        mLoginPassword.setText("");
 
 
         mLoginPassword.setText(PreferenceUtils.getUserId());
@@ -105,19 +107,6 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-                userId = mLoginPassword.getText().toString();
-                userNickname = mLoginEmail.getText().toString();
-
-
-                userId = userId.replaceAll("\\s", "");
-
-
-
-                PreferenceUtils.setUserId(userId);
-                PreferenceUtils.setNickname(userNickname);
-
-
-
 
 
 
@@ -139,6 +128,25 @@ public class LoginActivity extends AppCompatActivity {
 
 
                     loginUser(email, password);
+
+
+                    String useridnew=mLoginEmail.getText().toString()+mLoginPassword.getText().toString()+user_id;
+
+
+
+//                userId = mLoginPassword.getText().toString();
+                    userId=useridnew;
+                    userNickname = mLoginEmail.getText().toString();
+
+
+                    userId = userId.replaceAll("\\s", "");
+
+
+
+                    PreferenceUtils.setUserId(userId);
+                    PreferenceUtils.setNickname(userNickname);
+
+
 
                 }
 
@@ -220,6 +228,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
                     String current_user_id = mAuth.getCurrentUser().getUid();
+
+                   setUser_id(current_user_id);
+
                     String deviceToken = FirebaseInstanceId.getInstance().getToken();
 
                     mUserDatabase.child(current_user_id).child("device_token").setValue(deviceToken).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -323,5 +334,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+
+    private void setUser_id(String user_id)
+    {
+        this.user_id=user_id;
+
+
+    }
 
 }

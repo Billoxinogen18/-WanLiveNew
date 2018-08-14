@@ -72,7 +72,7 @@ public class LoginSignUp extends AppCompatActivity {
     private Button mConnectButton;
     private Button login;
     private ContentLoadingProgressBar mProgressBar;
-
+    private String user_id;
 
     private Button mCreateBtn;
     private Button loginActiv;
@@ -146,6 +146,7 @@ public class LoginSignUp extends AppCompatActivity {
         mLoginLayout = (RelativeLayout) findViewById(R.id.layout_logina);
         login=(Button)findViewById(R.id.logina);
        mPassword = (EditText) findViewById(R.id.pass);
+       mPassword.setText("");
         mDisplayName = (EditText) findViewById(R.id.username);
         mEmail = (EditText) findViewById(R.id.city);
 
@@ -168,15 +169,8 @@ public class LoginSignUp extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                userId = mPassword.getText().toString();
-                userNickname = mEmail.getText().toString();
-                // Remove all spaces from userID
-                userId = userId.replaceAll("\\s", "");
 
 
-
-                PreferenceUtils.setUserId(userId);
-                PreferenceUtils.setNickname(userNickname);
 
 
 
@@ -201,6 +195,26 @@ public class LoginSignUp extends AppCompatActivity {
                     pDialog.setCancelable(false);
                     pDialog.show();
                     register_user(display_name, email, password);
+
+
+//                userId = mPassword.getText().toString();
+
+                    String useridnew=mEmail.getText().toString()+mPassword.getText().toString()+user_id;
+
+
+
+//                userId = mLoginPassword.getText().toString();
+                    userId=useridnew;
+
+                    userNickname = mEmail.getText().toString();
+                    // Remove all spaces from userID
+                    userId = userId.replaceAll("\\s", "");
+
+
+
+
+
+
 
                 }
                 else
@@ -232,53 +246,8 @@ public class LoginSignUp extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-
-
-        Cache cache = AppController.getInstance().getRequestQueue().getCache();
-        Cache.Entry entry = cache.get(URL_FEED);
-        if (entry != null) {
-            // fetch the data from cache
-            try {
-
-                String data = new String(entry.data, "UTF-8");
-
-                try {
-                    parseJsonFeed(new JSONObject(data));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-            // making fresh volley request and getting json
-            JsonObjectRequest jsonReq = new JsonObjectRequest(Request.Method.GET,
-                    URL_FEED, null, new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject response) {
-                    VolleyLog.d(TAG, "Response: " + response.toString());
-                    if (response != null) {
-                        parseJsonFeed(response);
-                    }
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d(TAG, "Error: " + error.getMessage());
-                }
-            });
-
-            // Adding request to volley request queue
-            AppController.getInstance().addToRequestQueue(jsonReq);
-        }
-
-
-
-
-
+        mPassword.setText("");
+        mEmail.setText("");
 
 
 
@@ -405,7 +374,7 @@ public class LoginSignUp extends AppCompatActivity {
     }
 
 
-    private void register_user(final String display_name, String email, String password) {
+    private void register_user(final String display_name, final String email, final String password) {
 
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -416,6 +385,11 @@ public class LoginSignUp extends AppCompatActivity {
 
                     FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
                     String uid = current_user.getUid();
+
+                    String ud=uid+email+password;
+                    String userd = ud.replaceAll("\\s", "");
+                    PreferenceUtils.setUserId(userd);
+                    PreferenceUtils.setNickname(email);
 
                     mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
 
@@ -538,6 +512,13 @@ public class LoginSignUp extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setUser_id(String user_id)
+    {
+        this.user_id=user_id;
+
+
     }
 }
 
