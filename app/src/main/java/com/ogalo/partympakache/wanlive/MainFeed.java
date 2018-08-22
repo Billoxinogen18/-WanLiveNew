@@ -119,7 +119,7 @@ public class MainFeed extends AppCompatActivity  {
                 Boolean ischeckeds=butchecked.isChecked();
                 ischecked=ischeckeds.toString();
 
-                Toast.makeText(MainFeed.this, ischecked, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainFeed.this, ischecked, Toast.LENGTH_SHORT).show();
                 String status = ((TextView) view.findViewById(R.id.statuses)).getText().toString();
 
 

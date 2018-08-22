@@ -23,16 +23,16 @@
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="wrap_content"
             android:background="@color/transpar"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleTextAppearance="@android:color/transparent"
+            app:contentScrim="@color/black_overla"
+            app:expandedTitleTextAppearance="@color/transpar"
             android:fitsSystemWindows="true">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
             <com.ogalo.partympakache.wanlive.WanImageView
                 android:id="@+id/header_image"
                 android:layout_width="match_parent"
@@ -85,7 +85,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            card_view:cardElevation="5dp"
+
+            card_view:cardElevation="3dp"
             card_view:cardUseCompatPadding="true">
 
             <LinearLayout
@@ -125,7 +126,7 @@
                     android:layout_marginBottom="12dp"
                     android:layout_marginLeft="10dp"
                     android:numStars="5"
-                    android:paddingTop="40dp"
+                    android:paddingTop="20dp"
 
                     android:isIndicator="true"
                     android:rating="3.4"

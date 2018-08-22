@@ -30,8 +30,8 @@
     <color name="facebook">#3b5998</color>
     <color name="twitter">#55ACEE</color>
     <color name="linkedin">#287bbc</color>
-    <color name="colorPrimary">#B21AAC</color>
-    <color name="colorPrimaryDark">#B21AAC</color>
+    <color name="colorPrimary">#ff400080</color>
+    <color name="colorPrimaryDark">#ff400080</color>
     <color name="colorPrimaryTest">#11B21AAC</color>
     <color name="colorAccent">#B21AAC</color>
     <color name="colorPrimaryLight">#ffd532</color>
@@ -43,6 +43,7 @@
     <color name="transpar">#00000000</color>
     <color name="black_over">#94000000</color>
     <color name="black_overla">#88000000</color>
+    <color name="black_overa">#93000000</color>
     <color name="white_overla">#99CCCCCC</color>
     <color name="blacko">#ff000000</color>
     <color name="colorBlack">#000000</color>

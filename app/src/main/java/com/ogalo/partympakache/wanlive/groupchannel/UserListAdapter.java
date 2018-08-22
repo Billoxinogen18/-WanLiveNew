@@ -88,6 +88,7 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         private void bind(final Context context, final UserHolder holder, final User user) {
             nameText.setText(user.getNickname());
+
             ImageUtils.displayRoundImageFromUrl(context, user.getProfileUrl(), profileImage);
 
             if (mIsGroupChannel) {

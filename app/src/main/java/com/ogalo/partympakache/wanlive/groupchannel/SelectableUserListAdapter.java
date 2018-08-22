@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.google.android.gms.ads.formats.NativeAd;
 import com.ogalo.partympakache.wanlive.BlockedMembersListActivity;
 import com.ogalo.partympakache.wanlive.R;
 import com.ogalo.partympakache.wanlive.utils.ImageUtils;
@@ -130,6 +131,7 @@ public class SelectableUserListAdapter extends RecyclerView.Adapter<RecyclerView
         private ImageView profileImage;
         private ImageView blockedImage;
         private CheckBox checkbox;
+        private  ImageView onlines;
 
         private boolean mIsBlockedList;
         private boolean mShowCheckBox;
@@ -144,7 +146,11 @@ public class SelectableUserListAdapter extends RecyclerView.Adapter<RecyclerView
             nameText = (TextView) itemView.findViewById(R.id.text_selectable_user_list_nickname);
             profileImage = (ImageView) itemView.findViewById(R.id.image_selectable_user_list_profile);
             blockedImage = (ImageView) itemView.findViewById(R.id.image_user_list_blocked);
+            onlines= (ImageView) itemView.findViewById(R.id.online);
             checkbox = (CheckBox) itemView.findViewById(R.id.checkbox_selectable_user_list);
+
+
+
         }
 
         public void setShowCheckBox(boolean showCheckBox) {
@@ -153,6 +159,17 @@ public class SelectableUserListAdapter extends RecyclerView.Adapter<RecyclerView
 
         private void bind(final Context context, final User user, boolean isSelected, final OnItemCheckedChangeListener listener) {
             nameText.setText(user.getNickname());
+            String dat=user.getConnectionStatus().toString();
+            if(dat.equals("ONLINE"))
+            {
+                onlines.setBackgroundResource(R.drawable.online);
+            }
+            else
+                if (dat.equals("OFFLINE"))
+                {
+                    onlines.setBackgroundResource(R.drawable.offline);
+                }
+
             ImageUtils.displayRoundImageFromUrl(context, user.getProfileUrl(), profileImage);
 
             if (mIsBlockedList) {

@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.android.volley.toolbox.ImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -151,7 +151,7 @@ floaty.setOnClickListener(new View.OnClickListener() {
                 .setResponseObserver(new WanImageView.ResponseObserver() {
                     @Override
                     public void onError() {
-                        Toast.makeText(DetailsActivity.this, "Check your connection", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(DetailsActivity.this, "Check your connection", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

@@ -386,7 +386,7 @@ public class LoginSignUp extends AppCompatActivity {
                     FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
                     String uid = current_user.getUid();
 
-                    String ud=uid+email+password;
+                    String ud=uid+password;
                     String userd = ud.replaceAll("\\s", "");
                     PreferenceUtils.setUserId(userd);
                     PreferenceUtils.setNickname(email);
