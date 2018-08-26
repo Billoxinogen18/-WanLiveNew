@@ -9,8 +9,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class Payments extends AppCompatActivity {
     Double clickcount=0.0;
+    private SweetAlertDialog pDialog;
+    private SweetAlertDialog success;
     Double tickets=1.0;
     private Button change;
     private ImageButton add;
@@ -25,7 +29,8 @@ public class Payments extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payments);
         Intent i = getIntent();
-
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE);
+        success = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
         String pricer= i.getStringExtra("price");
         buyer=Double.parseDouble(pricer);
         add=(ImageButton) findViewById(R.id.add);
@@ -41,6 +46,7 @@ public class Payments extends AppCompatActivity {
 
         setTics(1.0);
 
+
         setNum(buyer);
 
 
@@ -50,9 +56,9 @@ public class Payments extends AppCompatActivity {
             public void onClick(View v) {
 
 
-               tickets=tickets+tickets;
+               tickets=++tickets;
 
-                clickcount=clickcount+clickcount;
+                clickcount=clickcount+buyer;
                 if(clickcount==1.0)
                 {
                     //first time clicked to do this
@@ -81,7 +87,7 @@ public class Payments extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(tickets>1.0)
+                if(tickets>=1.0)
                 {
 
                     ticcounter.setText("Tickets");
@@ -107,7 +113,11 @@ public class Payments extends AppCompatActivity {
                 else
                 {
                     ticcounter.setText("Ticket");
-                    Toast.makeText(Payments.this, "Please buy more tickets", Toast.LENGTH_SHORT).show();
+                    pDialog.setTitleText("Error...");
+                    pDialog.setContentText("Please select at least one ticket");
+                    pDialog.setCancelText("Okay");
+
+                    pDialog.show();
                 }
 
 
@@ -122,11 +132,25 @@ public class Payments extends AppCompatActivity {
         change.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Double burito=Double.parseDouble(change.getText().toString());
 
-                //WIll implement alertDialog where users can choose paypal or mpesa
-                Toast.makeText(Payments.this, "Choose Mpesa or Paypal", Toast.LENGTH_SHORT).show();
+                if(clickcount.equals(0.0))
+                {
 
+                            pDialog.setTitleText("Error...");
+                    pDialog.setContentText("Please select at least one ticket");
+                    pDialog.show();
 
+                }
+
+                else {
+                    //WIll implement alertDialog where users can choose paypal or mpesa
+
+                            success.setTitleText("Error...");
+                            success.setContentText("Select MPESA or PayPal");
+                            success.show();
+
+                }
 
 
 

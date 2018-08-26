@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -15,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -34,13 +36,18 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -48,6 +55,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -138,6 +146,7 @@ public class WanMaps extends AppCompatActivity
     // Used for selecting the current place.
     private static final int M_MAX_ENTRIES = 5;
     private String[] mLikelyPlaceNames;
+    private SwipeRefreshLayout swipeContainer;
     private String[] mLikelyPlaceAddresses;
     private String[] mLikelyPlaceAttributions;
     private LatLng[] mLikelyPlaceLatLngs;
@@ -171,7 +180,7 @@ public class WanMaps extends AppCompatActivity
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+//        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         // Build the map.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.maps);
@@ -192,6 +201,44 @@ public class WanMaps extends AppCompatActivity
         location=(ImageView)findViewById(R.id.navigate);
         logout=(Button)findViewById(R.id.logout);
 
+
+        PlaceAutocompleteFragment placesb= (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                .build();
+
+        placesb.setFilter(typeFilter);
+        placesb.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+
+                LatLng latLng=place.getLatLng();
+
+//                mMap.addMarker(new MarkerOptions()
+////                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+//                        .title(place.getName().toString())
+////                            .snippet(feedObj.getString("matime"))
+//                        .snippet(place.getAddress().toString())
+//
+//                        .position(latLng));
+
+
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(latLng).zoom(13).build();
+
+                mMap.animateCamera(CameraUpdateFactory
+                        .newCameraPosition(cameraPosition));
+
+                Toast.makeText(getApplicationContext(),place.getName(),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Status status) {
+
+                Toast.makeText(getApplicationContext(),status.toString(),Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
 
 
@@ -355,6 +402,21 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+
+
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = map.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.style_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
 
         // Use a custom info window adapter to handle multiple lines of text in the
         // info window contents.
@@ -746,6 +808,10 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
                     mMap.animateCamera(CameraUpdateFactory
                             .newCameraPosition(cameraPosition));
+
+                    getDeviceLocation();
+
+
                 }
 
 
@@ -857,6 +923,7 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
                         TextView tLocation = (TextView) v.findViewById(R.id.location);
 
                         TextView tSnippet = (TextView) v.findViewById(R.id.population);
+
 
                         Integer posis=Integer.parseInt(arg0.getSnippet());
 

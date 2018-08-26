@@ -9,6 +9,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -50,6 +52,7 @@ public class MainFeed extends AppCompatActivity  {
     private WanAdapter listAdapter;
     private List<WanItem> feedItems;
     private ProgressDialog mRegProgress;
+    private SwipeRefreshLayout swipeContainer;
     private String URL_FEED = "http://www.wayawaya.co.ke/wayawaya.co.ke/bill/wanlive/wanlive_thebalanceofdestiny.json";
 
     @SuppressLint("NewApi")
@@ -63,6 +66,32 @@ public class MainFeed extends AppCompatActivity  {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+            @Override
+
+            public void onRefresh() {
+
+                // Your code to refresh the list here.
+
+                // Make sure you call swipeContainer.setRefreshing(false)
+
+                // once the network request has completed successfully.
+
+//                fetchTimelineAsync(0);
+listAdapter.notifyDataSetChanged();
+            }
+
+        });
+
+
+        swipeContainer.setColorSchemeColors(getResources().getColor(android.R.color.holo_red_light),
+                getResources().getColor(R.color.colorAccent),
+                getResources().getColor(android.R.color.holo_blue_light),
+                getResources().getColor(android.R.color.holo_orange_light));
 
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -99,6 +128,30 @@ public class MainFeed extends AppCompatActivity  {
 
         listAdapter = new WanAdapter(this, feedItems);
         listView.setAdapter(listAdapter);
+
+
+
+
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                boolean enable = false;
+                if(listView != null && listView.getChildCount() > 0){
+                    // check if the first item of the list is visible
+                    boolean firstItemVisible = listView.getFirstVisiblePosition() == 0;
+                    // check if the top of the first item is visible
+                    boolean topOfFirstItemVisible = listView.getChildAt(0).getTop() == 0;
+                    // enabling or disabling the refresh layout
+                    enable = firstItemVisible && topOfFirstItemVisible;
+                }
+                swipeContainer.setEnabled(enable);
+            }});
 
 
 
@@ -183,6 +236,9 @@ public class MainFeed extends AppCompatActivity  {
                 public void onResponse(JSONObject response) {
                     VolleyLog.d(TAG, "Response: " + response.toString());
                     if (response != null) {
+
+
+
                         parseJsonFeed(response);
                     }
 

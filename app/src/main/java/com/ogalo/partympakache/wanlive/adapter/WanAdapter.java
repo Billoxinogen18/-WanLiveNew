@@ -62,6 +62,20 @@ public class WanAdapter extends BaseAdapter {
 
     }
 
+    public void clear() {
+
+        wanItems.clear();
+
+        notifyDataSetChanged();
+
+    }
+    public void addAll(List<WanItem> wanItem) {
+
+        wanItems.addAll(wanItem);
+
+        notifyDataSetChanged();
+
+    }
 	@Override
 	public int getCount() {
 		return wanItems.size();
