@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
         mLoginPassword.setText(PreferenceUtils.getUserId());
-        mLoginEmail.setText(PreferenceUtils.getNickname());
+//        mLoginEmail.setText(PreferenceUtils.getNickname());
 
 
         mConnectButton=(Button)findViewById(R.id.login_button);
@@ -169,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-    private void connectToSendBird(final String userId, final String userNickname) {
+    private void connectToSendBird(final String userId) {
         // Show the loading indicator
         showProgressBar(true);
         mConnectButton.setEnabled(false);
@@ -200,7 +200,7 @@ public class LoginActivity extends AppCompatActivity {
                 PreferenceUtils.setConnected(true);
 
                 // Update the user's nickname
-                updateCurrentUserInfo(userNickname);
+//                updateCurrentUserInfo(userNickname);
                 updateCurrentUserPushToken();
 
                 // Proceed to MainActivity
@@ -246,7 +246,7 @@ public class LoginActivity extends AppCompatActivity {
 //                                Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
 //                                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //                                startActivity(mainIntent);
-                            connectToSendBird(userId, userNickname);
+                            connectToSendBird(userId);
 
                         }
                     });

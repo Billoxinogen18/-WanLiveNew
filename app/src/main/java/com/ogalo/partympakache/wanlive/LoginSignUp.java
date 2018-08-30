@@ -73,7 +73,7 @@ public class LoginSignUp extends AppCompatActivity {
     private Button login;
     private ContentLoadingProgressBar mProgressBar;
     private String user_id;
-
+   private String displaynamees;
     private Button mCreateBtn;
     private Button loginActiv;
     private Button lognActivity;
@@ -152,6 +152,7 @@ public class LoginSignUp extends AppCompatActivity {
 
 
         mPassword.setText(PreferenceUtils.getUserId());
+        displaynamees=mDisplayName.getText().toString();
         mEmail.setText(PreferenceUtils.getNickname());
 
 
@@ -389,7 +390,7 @@ public class LoginSignUp extends AppCompatActivity {
                     String ud=uid+password;
                     String userd = ud.replaceAll("\\s", "");
                     PreferenceUtils.setUserId(userd);
-                    PreferenceUtils.setNickname(email);
+                    PreferenceUtils.setNickname(display_name);
 
                     mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
 
@@ -416,7 +417,7 @@ public class LoginSignUp extends AppCompatActivity {
 //                                Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
 //                                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //                                startActivity(mainIntent);
-                                connectToSendBird(userId, userNickname);
+                                connectToSendBird(userId, display_name);
 
 
                             }
