@@ -148,7 +148,15 @@ public class Payments extends AppCompatActivity {
 
                             success.setTitleText("Error...");
                             success.setContentText("Select MPESA or PayPal");
+                            success.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    sDialog.dismissWithAnimation();
+                                    sDialog.dismiss();
+                                }
+                            });
                             success.show();
+
 
                 }
 
