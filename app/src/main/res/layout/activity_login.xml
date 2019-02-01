@@ -55,8 +55,9 @@
                 android:layout_height="45dp"
                 android:padding="12dp"
                 android:text=""
+                android:textColor="@color/blacko"
 
-                android:textColorHint="@color/white"
+                android:textColorHint="@color/black_overlay"
                 android:hint="Email"
                 android:ems="10"
                 android:inputType="textPersonName" />
@@ -78,9 +79,9 @@
                 android:background="@drawable/bg_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-
+                android:textColor="@color/blacko"
                 android:text=""
-                android:textColorHint="@color/white"
+                android:textColorHint="@color/black_overlay"
                 android:padding="12dp"
                 android:hint="Password"
                 android:ems="10"

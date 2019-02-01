@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:background="@color/black_overlay"
-    android:layout_height="match_parent">
+    android:background="@color/black_overla"
+    android:layout_height="match_parent"
+   >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/black_overla"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:background="@color/black_overla">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true">
+        <!--android:background="@color/black_overla">-->
+
 <View
     android:layout_width="match_parent"
+
     android:layout_height="match_parent"
     android:background="@color/black_overla"
     android:layout_alignParentStart="true"
-
+    android:layout_alignParentLeft="true"
 
     android:layout_alignParentTop="true"
 
-
     android:focusable="false"
-    android:scaleType="fitXY"
+
     android:visibility="visible" ></View>
 
-        <com.ogalo.partympakache.wanlive.WanImageView
+        <com.ogalo.partympakache.wanlive.WanImageViewBlur
             android:id="@+id/feedImage1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="500dp"
             android:layout_alignParentStart="true"
-
+            android:layout_alignParentLeft="true"
 
             android:layout_alignParentTop="true"
 
 
             android:focusable="false"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
             android:visibility="visible" />
 
 
@@ -49,6 +54,7 @@
         android:layout_width="218dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="20dp"
 
@@ -75,9 +81,9 @@
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="25dp"
 
-
+        android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:focusable="false"
             android:isIndicator="true"
@@ -93,21 +99,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/titles"
-        android:layout_marginEnd="85dp"
+        android:layout_marginEnd="60dp"
         android:focusable="false"
         android:padding="10dp"
         android:paddingRight="10dp"
         android:text="Cost"
         android:textAlignment="textEnd"
         android:textColor="@color/white"
-        android:textSize="14dp"
+        android:textSize="10dp"
         android:textStyle="bold" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="200dp"
         android:layout_alignStart="@+id/titles"
+        android:layout_alignLeft="@+id/titles"
         android:paddingBottom="10dp"
         android:paddingTop="40dp">
 
@@ -118,10 +126,12 @@
 
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
 
-            android:layout_marginBottom="27dp"
+            android:layout_marginBottom="55dp"
             android:focusable="false"
             android:text="Time"
+            android:textSize="10dp"
             android:textColor="@color/white"
             android:textStyle="bold" />
 
@@ -133,7 +143,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/titles"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="80dp"
 
         android:textStyle="italic"
 
@@ -211,7 +221,7 @@
         android:layout_width="wrap_content"
         android:layout_height="87dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="22dp"
         android:layout_marginEnd="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
@@ -231,7 +241,7 @@
 
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="13dp"
+            android:layout_marginBottom="15dp"
             android:background="@drawable/bg_greenreal"
 
 
@@ -253,7 +263,7 @@
 
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="13dp"
+            android:layout_marginBottom="15dp"
             android:background="@drawable/bg_green"
             android:focusable="false"
 

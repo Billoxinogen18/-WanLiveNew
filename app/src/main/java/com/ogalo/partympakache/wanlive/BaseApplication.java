@@ -19,5 +19,6 @@ public class BaseApplication extends Application {
         PreferenceUtils.init(getApplicationContext());
 
         SendBird.init(APP_ID, getApplicationContext());
+        //bill
     }
 }

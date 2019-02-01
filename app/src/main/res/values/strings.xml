@@ -13,7 +13,7 @@
     <string name="all_create">Create</string>
     <string name="all_invite">Invite</string>
 
-    <string name="all_group_channels">Chat Channels</string>
+    <string name="all_group_channels">Inbox</string>
     <string name="all_open_channels">Open Channels</string>
 
     <!-- main -->
@@ -38,7 +38,7 @@
     <!-- Group Channel List -->
     <string name="group_channel_list_file_message_text">%1$s has uploaded a file.</string>
 
-    <string name="create_group_channel">Create Chat Channel</string>
+    <string name="create_group_channel">Pick</string>
     <string name="member_list">Members</string>
     <string name="invite_member">Invite members</string>
 

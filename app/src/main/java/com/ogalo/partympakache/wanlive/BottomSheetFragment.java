@@ -25,7 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.android.volley.toolbox.ImageLoader;
+
+import com.duowan.mobile.netroid.cache.BitmapImageCache;
+import com.duowan.mobile.netroid.cache.DiskCache;
+import com.duowan.mobile.netroid.toolbox.ImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,13 +36,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ogalo.partympakache.wanlive.app.AppController;
+import com.ogalo.partympakache.wanlive.app.SelfImageLoader;
+import com.ogalo.partympakache.wanlive.app.WanLive;
 import com.ogalo.partympakache.wanlive.data.WanItem;
 
-public class BottomSheetFragment extends BottomSheetDialogFragment {
+import java.io.File;
+//import com.ogalo.partympakache.wanlive.data.WanItem;
+//import com.vincestyling.netroid.toolbox.ImageLoader;
+
+public class BottomSheetFragment extends BaseActivityFragments {
 
     private String uid;
-    ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+    ImageLoader imageLoader = WanLive.getInstance().getImageLoader();
 
     private DatabaseReference mDatabase;
     private TextView times;
@@ -51,18 +59,30 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     public Boolean ischeck=getIscheckedw();
     public Boolean ischeckedn=getIschecked();
     @Override
+    protected void initNetroid() {
+        File diskCacheDir = new File(getActivity().getCacheDir(), "WanLIve");
+        int diskCacheSize = 50 * 1024 * 1024; // 50MB
+        WanLive.init(new DiskCache(diskCacheDir, diskCacheSize));
+        WanLive.setImageLoader(new SelfImageLoader(WanLive.getRequestQueue(),
+                new BitmapImageCache(diskCacheSize), getResources(), getActivity().getAssets()));
+    }
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
     }
 
+
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         if (imageLoader == null)
-            imageLoader = AppController.getInstance().getImageLoader();
+            imageLoader = WanLive.getInstance().getImageLoader();
         firebref=mDatabase= FirebaseDatabase.getInstance().getReference();
         FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
         uid = current_user.getUid();

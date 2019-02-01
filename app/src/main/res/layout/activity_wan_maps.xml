@@ -52,6 +52,18 @@
             android:layout_marginTop="16dp" />
 
 
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/avi"
+            style="@style/AVLoadingIndicatorView.Large"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:visibility="invisible"
+            app:indicatorColor="@color/ok_light"
+            app:indicatorName="BallScaleMultipleIndicator" />
+
+
         <ImageView
             android:id="@+id/settings"
             android:layout_width="35dp"
@@ -59,9 +71,10 @@
             android:elevation="15dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+
             android:layout_marginEnd="12dp"
             android:layout_marginTop="68dp"
-            android:src="@drawable/settings_icon" />
+            android:src="@drawable/settings_setup" />
 
         <ImageView
             android:id="@+id/navigate"
@@ -71,7 +84,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignStart="@+id/message"
             android:layout_marginBottom="55dp"
-            android:src="@drawable/logout" />
+            android:src="@drawable/plus" />
 
         <ImageView
             android:id="@+id/createmessage"

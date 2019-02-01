@@ -13,13 +13,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- min 16 -->
 
     <uses-sdk tools:overrideLibrary="com.stfalcon.multiimageview" />
     <application
-        android:name=".app.AppController"
+        android:name=".app.WanLive"
         android:allowBackup="true"
+
         android:appCategory="social"
         tools:replace="android:icon,android:label"
         android:description="@string/app_name"

@@ -1,12 +1,13 @@
 package com.ogalo.partympakache.wanlive;
 
 import android.app.ProgressDialog;
-import android.content.ClipData;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -31,11 +32,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.duowan.mobile.netroid.Listener;
+import com.duowan.mobile.netroid.NetroidError;
+import com.duowan.mobile.netroid.cache.BitmapImageCache;
+import com.duowan.mobile.netroid.cache.DiskCache;
+import com.duowan.mobile.netroid.request.StringRequest;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -62,7 +71,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.ogalo.partympakache.wanlive.adapter.WanAdapter;
-import com.ogalo.partympakache.wanlive.app.AppController;
+import com.ogalo.partympakache.wanlive.app.SelfImageLoader;
+import com.ogalo.partympakache.wanlive.app.WanLive;
 import com.ogalo.partympakache.wanlive.data.Model1;
 import com.ogalo.partympakache.wanlive.data.WanItem;
 import com.ogalo.partympakache.wanlive.groupchannel.CreateGroupChannelActivity;
@@ -72,26 +82,34 @@ import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.sendbird.android.SendBird;
 import com.sendbird.android.SendBirdException;
 
+import com.wang.avi.AVLoadingIndicatorView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-public class WanMaps extends AppCompatActivity
-        implements OnMapReadyCallback {
 
+public class WanMaps extends BaseActivity
+        implements OnMapReadyCallback,  GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        GoogleMap.OnMarkerDragListener,
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnMarkerClickListener,
+        View.OnClickListener {
+    private GoogleApiClient mGoogleApiClient;
     Bundle intent;
-    private List<WanItem> markerItems=new ArrayList<WanItem>();
+    private List<WanItem> markerItems = new ArrayList<WanItem>();
     public double latitude;
+    int PERMISSION_REQUEST_CODE;
     public String ratingso;
-    public  String timeso;
+    public String timeso;
+    private SweetAlertDialog pDialog;
 
     public double longitude;
     public LocationManager locationManager;
@@ -105,8 +123,7 @@ public class WanMaps extends AppCompatActivity
     public Criteria criteria;
     public String bestProvider;
 
-    private String URL_FEED = "http://www.wayawaya.co.ke/wayawaya.co.ke/bill/wanlive/wanlive_thebalanceofdestiny.json";
-
+    private String URL_FEED = "http://butterknife.000webhostapp.com/wanrest/wan_alldata.php";
 
 
     private static final String TAG = WanMaps.class.getSimpleName();
@@ -116,9 +133,14 @@ public class WanMaps extends AppCompatActivity
     private ImageView inbox;
     private ImageView message;
     private ImageView location;
+    private AVLoadingIndicatorView avi;
     private Button logout;
     private FirebaseAuth mAuth;
     private Button places;
+    private double longitudess;
+    private double latitudess;
+    private Double latitSelected;
+    private Double longitSelected;
     private String latits;
     private String longits;
     // The entry points to the Places API.
@@ -134,6 +156,7 @@ public class WanMaps extends AppCompatActivity
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
+    Context wanmaps=WanMaps.this;
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
@@ -142,14 +165,114 @@ public class WanMaps extends AppCompatActivity
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
-
+    private static final int GOOGLE_API_CLIENT_ID = 0;
     // Used for selecting the current place.
     private static final int M_MAX_ENTRIES = 5;
+    Location currentLocation;
     private String[] mLikelyPlaceNames;
     private SwipeRefreshLayout swipeContainer;
     private String[] mLikelyPlaceAddresses;
     private String[] mLikelyPlaceAttributions;
     private LatLng[] mLikelyPlaceLatLngs;
+    LatLng latLngi;
+
+
+    @Override
+    protected void initNetroid() {
+        File diskCacheDir = new File(getCacheDir(), "WanLIve");
+        int diskCacheSize = 50 * 1024 * 1024; // 50MB
+        WanLive.init(new DiskCache(diskCacheDir, diskCacheSize));
+        WanLive.setImageLoader(new SelfImageLoader(WanLive.getRequestQueue(),
+                new BitmapImageCache(diskCacheSize), getResources(), getAssets()));
+    }
+
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient  =new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        Log.v(TAG,"view click event");
+    }
+
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        // mMap.clear();
+        mMap.addMarker(new MarkerOptions().position(latLng).draggable(true));
+    }
+
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Toast.makeText(this, "onMarkerClick", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+        Toast.makeText(this, "onMarkerDragStart", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+        Toast.makeText(this, "onMarkerDrag", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        // getting the Co-ordinates
+        latitudess = marker.getPosition().latitude;
+        longitudess = marker.getPosition().longitude;
+
+        //move to current position
+        moveMap();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    public void onConnected(Bundle connectionHint) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        getDeviceLocation();
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,7 +281,7 @@ public class WanMaps extends AppCompatActivity
 
 
 
-
+        buildGoogleApiClient();
 
 
 
@@ -180,6 +303,17 @@ public class WanMaps extends AppCompatActivity
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+avi=findViewById(R.id.avi);
+
+
+processEventListener();
+
+
+
+
+
+
 //        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         // Build the map.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -213,6 +347,7 @@ public class WanMaps extends AppCompatActivity
             public void onPlaceSelected(Place place) {
 
                 LatLng latLng=place.getLatLng();
+
 
 //                mMap.addMarker(new MarkerOptions()
 ////                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
@@ -277,7 +412,7 @@ public class WanMaps extends AppCompatActivity
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                disconnect();
+                showBottomSheetDialogFragmentPost();
             }
         });
 
@@ -299,58 +434,7 @@ public class WanMaps extends AppCompatActivity
 
 
 
-String bill="Bill";
-Cache cache = AppController.getInstance().getRequestQueue().getCache();
-        Cache.Entry entry = cache.get(URL_FEED);
-        if (entry != null) {
-            // fetch the data from cache
 
-
-                JsonObjectRequest jsonReq = new JsonObjectRequest(Request.Method.GET,
-                        URL_FEED, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        VolleyLog.d(TAG, "Response: " + response.toString());
-                        if (response != null) {
-                            parseJsonFeed(response);
-                        }
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        VolleyLog.d(TAG, "Error: " + error.getMessage());
-                    }
-                });
-
-                // Adding request to volley request queue
-                AppController.getInstance().addToRequestQueue(jsonReq);
-
-
-        } else {
-            // making fresh volley request and getting json
-            JsonObjectRequest jsonReq = new JsonObjectRequest(Request.Method.GET,
-                    URL_FEED, null, new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject response) {
-                    VolleyLog.d(TAG, "Response: " + response.toString());
-                    if (response != null) {
-                        parseJsonFeed(response);
-                    }
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d(TAG, "Error: " + error.getMessage());
-                }
-            });
-
-            // Adding request to volley request queue
-            AppController.getInstance().addToRequestQueue(jsonReq);
-        }
 
 
 
@@ -359,16 +443,24 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
     }
 
+
+
+
+
     /**
      * Saves the state of the map when the activity is paused.
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        if (mMap != null) {
-            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
-            outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
-            super.onSaveInstanceState(outState);
-        }
+//        if (mMap != null) {
+//            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
+//            outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
+           super.onSaveInstanceState(outState);
+//
+
+
+
+
     }
 
     /**
@@ -402,6 +494,14 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+
+
+        // Add a marker in Sydney and move the camera
+        LatLng nairobi = new LatLng(36.78168639999999, -1.280738900000000);
+        mMap.addMarker(new MarkerOptions().position(nairobi).title("Nairobi"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(nairobi));
+        mMap.setOnMarkerDragListener(this);
+        mMap.setOnMapLongClickListener(this);
 
 
         try {
@@ -444,6 +544,8 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
             }
         });
 
+processEventListener();
+
         // Prompt the user for permission.
         getLocationPermission();
 
@@ -451,7 +553,7 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
         updateLocationUI();
 
         // Get the current location of the device and set the position of the map.
-        getDeviceLocation();
+
     }
 
     /**
@@ -462,37 +564,35 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
          * Get the best and most recent location of the device, which may be null in rare
          * cases when a location is not available.
          */
-        try {
-            if (mLocationPermissionGranted) {
+//         try {
+//             if (mLocationPermissionGranted) {
 
-                locationManager = (LocationManager)  this.getSystemService(Context.LOCATION_SERVICE);
-                criteria = new Criteria();
-                bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
+//                 locationManager = (LocationManager)  this.getSystemService(Context.LOCATION_SERVICE);
+//                 criteria = new Criteria();
+//                 bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
 
-                //You can still do this if you like, you might get lucky:
-                Location location = locationManager.getLastKnownLocation(bestProvider);
-                if (location != null) {
-                    Log.e("TAG", "GPS is on");
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
+//                 //You can still do this if you like, you might get lucky:
+//                 Location location = locationManager.getLastKnownLocation(bestProvider);
+//                 if (location != null) {
+//                     Log.e("TAG", "GPS is on");
+//                     latitude = location.getLatitude();
+//                     longitude = location.getLongitude();
 
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                            new LatLng(latitude,
-                                    longitude), DEFAULT_ZOOM));
+//                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+//                             new LatLng(latitude,
+//                                     longitude), DEFAULT_ZOOM));
 
-                }
-                else{
-                    //This is what you need:
-                    Log.d(TAG, "Current location is null. Using defaults.");
+//                 }
+//                 else{
+//                     //This is what you need:
+//                     Log.d(TAG, "Current location is null. Using defaults.");
 
-//                    Toast.makeText(this, "Location is null", Toast.LENGTH_SHORT).show();
+// //                    Toast.makeText(this, "Location is null", Toast.LENGTH_SHORT).show();
 
-                    mMap.moveCamera(CameraUpdateFactory
-                            .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-                    mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                }
-
-
+//                     mMap.moveCamera(CameraUpdateFactory
+//                             .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+//                     mMap.getUiSettings().setMyLocationButtonEnabled(false);
+//                 }
 
 
 
@@ -507,30 +607,140 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
 
 
-//                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-//                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Location> task) {
-//                        if (task.isSuccessful()) {
-//                            // Set the map's camera position to the current location of the device.
-//                            mLastKnownLocation = task.getResult();
-//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-//                                    new LatLng(mLastKnownLocation.getLatitude(),
-//                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-//                        } else {
-//                            Log.d(TAG, "Current location is null. Using defaults.");
-//                            Log.e(TAG, "Exception: %s", task.getException());
-//                            mMap.moveCamera(CameraUpdateFactory
-//                                    .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-//                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-//                        }
-//                    }
-//                });
-            }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
+
+
+// //                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+// //                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+// //                    @Override
+// //                    public void onComplete(@NonNull Task<Location> task) {
+// //                        if (task.isSuccessful()) {
+// //                            // Set the map's camera position to the current location of the device.
+// //                            mLastKnownLocation = task.getResult();
+// //                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+// //                                    new LatLng(mLastKnownLocation.getLatitude(),
+// //                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+// //                        } else {
+// //                            Log.d(TAG, "Current location is null. Using defaults.");
+// //                            Log.e(TAG, "Exception: %s", task.getException());
+// //                            mMap.moveCamera(CameraUpdateFactory
+// //                                    .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+// //                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+// //                        }
+// //                    }
+// //                });
+//             }
+//         } catch (SecurityException e)  {
+//             Log.e("Exception: %s", e.getMessage());
+//         }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (location != null) {
+            //Getting longitude and latitude
+            longitudess = location.getLongitude();
+            latitudess = location.getLatitude();
+
+            //moving the map to location
+            moveMap();
         }
     }
+
+
+
+
+
+
+    private void processEventListener() {
+
+
+
+
+
+
+
+        StringRequest request = new StringRequest(URL_FEED, new Listener<String>() {
+            ProgressDialog mPrgsDialog;
+
+            @Override
+            public void onPreExecute() {
+
+startAnim();
+
+
+                          }
+
+            // cancel the dialog with onFinish() callback
+            @Override
+            public void onFinish() {
+                stopAnim();
+            }
+
+            @Override
+            public void onSuccess(String response) {
+
+
+                try {
+                    JSONObject responses=new JSONObject(response);
+                    parseJsonFeed(responses);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                Toast.makeText(getApplicationContext(), "response is ： " + response, 2000).show();
+            }
+
+            @Override
+            public void onError(NetroidError error) {
+                stopAnim();
+                Toast.makeText(getApplicationContext(), error.getMessage(), 2000).show();
+            }
+
+            @Override
+            public void onCancel() {
+                stopAnim();
+                Toast.makeText(getApplicationContext(), "request was cancel", 2000).show();
+            }
+        });
+
+// add the request to RequestQueue, will execute quickly if has idle thread
+        WanLive.add(request);
+    }
+
+
+    void stopAnim(){
+        avi.hide();
+        // or avi.smoothToHide();
+    }
+
+    void startAnim(){
+        avi.show();
+        // or avi.smoothToShow();
+    }
+    private void moveMap() {
+
+        /**
+         * Creating the latlng object to store lat, long coordinates
+         * adding marker to map
+         * move the camera with animation
+         */
+        LatLng latLng = new LatLng(latitudess, longitudess);
+        mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .draggable(true)
+                .title("Your location"));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+    }
+
 
 
     /**
@@ -765,13 +975,15 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
                 final WanItem item = new WanItem();
                 Double latitude=Double.parseDouble(feedObj.getString("latitude"));
                 Double longitude=Double.parseDouble(feedObj.getString("longitude"));
+
                 item.setId(feedObj.getInt("id"));
-                item.setName(feedObj.getString("name"));
+                item.setName(feedObj.getString("title"));
+//                Toast.makeText(this, ischecked, Toast.LENGTH_SHORT).show();
                 item.setCost(feedObj.getString("cost"));
 
+                item.setTimes(feedObj.getString("time"));
+                item.setStatus(feedObj.getString("status"));
 
-
-                item.setTimes(feedObj.getString("matime"));
                 item.setRating(feedObj.getString("rating"));
                 item.setLatitude(feedObj.getString("latitude"));
                 item.setLongitude(feedObj.getString("longitude"));
@@ -820,7 +1032,7 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
                     // Create a marker for each city in the JSON data.
                     mMap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                            .title(feedObj.getString("name"))
+                            .title(feedObj.getString("title"))
 //                            .snippet(feedObj.getString("matime"))
                             .snippet(io)
 
@@ -828,7 +1040,7 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
 
 
-//                    Model1 model1 = new Model1(feedObj.getString("name"), feedObj.getString("status"), feedObj.getString("rating"), feedObj.getString("name"),  feedObj.getString("cost"));
+//                    Model1 model1 = new Model1(feedObj.getString("title"), feedObj.getString("status"), feedObj.getString("rating"), feedObj.getString("title"),  feedObj.getString("cost"));
 //                    Map<String, Object> postValues = model1.toMap();
 //
 //                    Map<String, Object> childUpdates = new HashMap<>();
@@ -840,7 +1052,7 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
                     mMap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                            .title(feedObj.getString("name"))
+                            .title(feedObj.getString("title"))
                             .snippet(io)
                             .position(latLng));
 
@@ -852,7 +1064,7 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
                     mMap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-                            .title(feedObj.getString("name"))
+                            .title(feedObj.getString("title"))
                             .snippet(io)
                             .position(latLng));
 
@@ -864,7 +1076,7 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
                     mMap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                            .title(feedObj.getString("name"))
+                            .title(feedObj.getString("title"))
                             .snippet(io)
                             .position(latLng));
 
@@ -876,17 +1088,18 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
                     mMap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
-                            .title(feedObj.getString("name"))
+                            .title(feedObj.getString("title"))
                             .snippet(io)
                             .position(latLng));
 
 
                 }
+                else
                 if(rates>=low&&rates<lowmid){
 
                     mMap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                            .title(feedObj.getString("name"))
+                            .title(feedObj.getString("title"))
 
                             .snippet(io)
                             .position(latLng));
@@ -898,8 +1111,38 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
 
 
+
+
+
+
+
+
                 }
 
+                else
+                if(rates>=what&&rates<lowmid){
+
+                    mMap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                            .title(feedObj.getString("title"))
+
+                            .snippet(io)
+                            .position(latLng));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                }
 
 
 
@@ -911,12 +1154,12 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
                 mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
                     @Override
-                    public View getInfoWindow(Marker arg0) {
+                    public View getInfoContents(Marker arg0) {
                         return null;
                     }
 
                     @Override
-                    public View getInfoContents(Marker arg0) {
+                    public View getInfoWindow(Marker arg0) {
 
                         View v = getLayoutInflater().inflate(R.layout.customlayout, null);
 
@@ -996,7 +1239,7 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
 
 
 
-                String name=feedObj.getString("name");
+                String name=feedObj.getString("title");
 //                String longitude=feedObj.getString("longitude");
 
 
@@ -1008,8 +1251,8 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
                 item.setImge(image);
                 item.setStatus(feedObj.getString("status"));
                 item.setProfilePic(feedObj.getString("profilePic"));
-                item.setTimeStamp(feedObj.getString("timeStamp"));
-                item.setTimeStamp(feedObj.getString("timeStamp"));
+//                item.setTimeStamp(feedObj.getString("timeStamp"));
+//                item.setTimeStamp(feedObj.getString("timeStamp"));
 
                 // url might be null sometimes
                 String feedUrl = feedObj.isNull("url") ? null : feedObj
@@ -1064,12 +1307,39 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
         final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_container);
 
 
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) frameLayout.getLayoutParams();
-            //left, top, right, bottom
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) frameLayout.getLayoutParams();
+        //left, top, right, bottom
 
 
         bottomSheetFragment.setArguments(intent);
         bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
+
+//        params.setMargins(10, 0, 10, 0); //setting margin left to 10px
+        frameLayout.setLayoutParams(params);
+
+    }
+
+
+
+
+
+
+
+    public void showBottomSheetDialogFragmentPost() {
+        BottomSheetNewPost bottomSheetFragmentPost = new BottomSheetNewPost();
+
+
+
+
+        final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_container);
+
+
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) frameLayout.getLayoutParams();
+        //left, top, right, bottom
+
+
+        bottomSheetFragmentPost.setArguments(intent);
+        bottomSheetFragmentPost.show(getSupportFragmentManager(), bottomSheetFragmentPost.getTag());
 
 //        params.setMargins(10, 0, 10, 0); //setting margin left to 10px
         frameLayout.setLayoutParams(params);
@@ -1184,6 +1454,65 @@ Cache cache = AppController.getInstance().getRequestQueue().getCache();
     {
         return titleso;
     }
+    public void setLatitSelected(Double latitSelected)
+    {
+
+        this.latitSelected=latitSelected;
+
+    }
+
+    public void setLongitSelected(Double longitSelected)
+    {
+
+        this.longitSelected=longitSelected;
+
+    }
+
+
+    private void setUpMapIfNeeded() {
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (mMap == null) {
+            // Try to obtain the map from the SupportMapFragment.
+
+            mMap.setMyLocationEnabled(true);
+            // Check if we were successful in obtaining the map.
+            if (mMap != null) {
+
+
+                mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
+                    @Override
+                    public void onMyLocationChange(Location arg0) {
+                        // TODO Auto-generated method stub
+
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("You"));
+                    }
+                });
+
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

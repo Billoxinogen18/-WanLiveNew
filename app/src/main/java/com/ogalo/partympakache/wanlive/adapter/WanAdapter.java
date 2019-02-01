@@ -1,15 +1,24 @@
 package com.ogalo.partympakache.wanlive.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -23,8 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
+import com.duowan.mobile.netroid.toolbox.ImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,10 +42,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ogalo.partympakache.wanlive.Payments;
 import com.ogalo.partympakache.wanlive.R;
-import com.ogalo.partympakache.wanlive.WanImageView;
-import com.ogalo.partympakache.wanlive.app.AppController;
+import com.ogalo.partympakache.wanlive.WanImageViewBlur;
+import com.ogalo.partympakache.wanlive.app.WanLive;
+import com.ogalo.partympakache.wanlive.data.WanItem;
+//
+//
 import com.ogalo.partympakache.wanlive.data.Post;
 import com.ogalo.partympakache.wanlive.data.WanItem;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,18 +58,25 @@ import java.util.Map;
 
 public class WanAdapter extends BaseAdapter {
     private String uid;
+
     Animation scaleUp;
     private DatabaseReference mDatabase;
+    private ViewHolder holder;
     private DatabaseReference firebref;
 	private Activity activity;
 	private LayoutInflater inflater;
     private int lastPosition = -1;
+    Context context;
+    private boolean isVisible;
+    int radiusArr[];
 	private List<WanItem> wanItems;
-	ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+    HashMap<Integer,Boolean> toggleButtonStateTracker = new HashMap<Integer, Boolean>();
+	ImageLoader imageLoader = WanLive.getInstance().getImageLoader();
 
 	public WanAdapter(Activity activity, List<WanItem> wanItems) {
 		this.activity = activity;
 		this.wanItems = wanItems;
+        radiusArr = new int[]{25, 23, 21, 19, 17};// decide blur amount
 
 
     }
@@ -91,85 +110,115 @@ public class WanAdapter extends BaseAdapter {
 		return position;
 	}
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
 
-        scaleUp= AnimationUtils.loadAnimation(activity, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+    static class ViewHolder {
+        public WanImageViewBlur feedImageView;
+        public TextView name;
+        public TextView time;
+        public TextView cost;
+        public TextView longitude;
+        public TextView latitude;
+        public TextView rating;
+        public TextView status;
+        public TextView imge;
+        public Button buy;
+        public RatingBar rates;
+        public ToggleButton toggle;
+        public ToggleButton toggla;
 
+
+    }
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 500;
+    }
+
+
+
+    @Override
+	public View getView(final int position, View convertView, ViewGroup parent) {
+
+        scaleUp = AnimationUtils.loadAnimation(activity, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
 
 
         if (inflater == null)
-			inflater = (LayoutInflater) activity
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            inflater = (LayoutInflater) activity
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ViewHolder viewHolder = new ViewHolder();
 
-
-		if (convertView == null)
-			convertView = inflater.inflate(R.layout.feetitemnew, null);
+        if (convertView == null)
+        {
+            convertView = inflater.inflate(R.layout.feetitemnew, null);
         convertView.startAnimation(scaleUp);
         lastPosition = position;
 
-		if (imageLoader == null)
-			imageLoader = AppController.getInstance().getImageLoader();
+        if (imageLoader == null)
+            imageLoader = WanLive.getInstance().getImageLoader();
 
-		TextView name = (TextView) convertView.findViewById(R.id.titles);
-        Button buy=(Button) convertView.findViewById(R.id.buy);
-        TextView time = (TextView) convertView.findViewById(R.id.time);
-		TextView cost = (TextView) convertView.findViewById(R.id.cost);
-        TextView longitude = (TextView) convertView.findViewById(R.id.longitude);
-        TextView latitude = (TextView) convertView.findViewById(R.id.latitude);
-        TextView rating = (TextView) convertView.findViewById(R.id.rating);
-		TextView status = (TextView) convertView.findViewById(R.id.statuses);
-        TextView imge = (TextView) convertView.findViewById(R.id.imge);
-        final ToggleButton toggle=(ToggleButton) convertView.findViewById(R.id.toggleButton);
-        final ToggleButton toggla=(ToggleButton) convertView.findViewById(R.id.toggl);
-        RatingBar rates=(RatingBar)convertView.findViewById(R.id.myrating);
-        firebref=mDatabase=FirebaseDatabase.getInstance().getReference();
+        viewHolder.name = (TextView) convertView.findViewById(R.id.titles);
+        viewHolder.buy = (Button) convertView.findViewById(R.id.buy);
+        viewHolder.time = (TextView) convertView.findViewById(R.id.time);
+        viewHolder.cost = (TextView) convertView.findViewById(R.id.cost);
+        viewHolder.longitude = (TextView) convertView.findViewById(R.id.longitude);
+        viewHolder.latitude = (TextView) convertView.findViewById(R.id.latitude);
+        viewHolder.rating = (TextView) convertView.findViewById(R.id.rating);
+        viewHolder.status = (TextView) convertView.findViewById(R.id.statuses);
+        viewHolder.imge = (TextView) convertView.findViewById(R.id.imge);
+        viewHolder.feedImageView = (WanImageViewBlur) convertView
+                .findViewById(R.id.feedImage1);
+       viewHolder.toggle = (ToggleButton) convertView.findViewById(R.id.toggleButton);
+        viewHolder.toggla = (ToggleButton) convertView.findViewById(R.id.toggl);
+        viewHolder.rates = (RatingBar) convertView.findViewById(R.id.myrating);
+        firebref = mDatabase = FirebaseDatabase.getInstance().getReference();
+        convertView.setTag(viewHolder);
+    }
 
-		LayerDrawable stars = (LayerDrawable) rates.getProgressDrawable();
-		stars.getDrawable(2).setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP);
+        else
+        {
+            holder =(ViewHolder) convertView.getTag();
+        }
+       holder = (ViewHolder) convertView.getTag();
+		LayerDrawable stars = (LayerDrawable) holder.rates.getProgressDrawable();
+		stars.getDrawable(2).setColorFilter(Color.CYAN, PorterDuff.Mode.SRC_ATOP);
 
 
-
+        final WanItem item = wanItems.get(position);
 
 
         FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
         uid = current_user.getUid();
 
-//		TextView timestamp = (TextView) convertView
-//				.findViewById(R.id.timestamp);
-//		TextView statusMsg = (TextView) convertView
-//				.findViewById(R.id.txtStatusMsg);
-//		TextView locations = (TextView) convertView.findViewById(R.id.locations);
-//		TextView times = (TextView) convertView
-//				.findViewById(R.id.times);
-//		TextView cost = (TextView) convertView
-//				.findViewById(R.id.cost);
-//		TextView url = (TextView) convertView.findViewById(R.id.txtUrl);
-//		NetworkImageView profilePic = (NetworkImageView) convertView
-//				.findViewById(R.id.profilePic);
-		WanImageView feedImageView = (WanImageView) convertView
-				.findViewById(R.id.feedImage1);
 
 
 
-		final WanItem item = wanItems.get(position);
 
 
 
-        if(item.getCost().equals("FREE"))
+
+
+        if(item.getCost().toUpperCase().equals("FREE"))
         {
-            toggla.setVisibility(View.VISIBLE);
-            buy.setVisibility(View.GONE);
+            holder.toggla.setVisibility(View.VISIBLE);
+            holder.buy.setVisibility(View.GONE);
 
 
 
 
         }
 
+        if (! toggleButtonStateTracker.containsKey(position)){
+            // Now the HashMap definitely contains the key
+            toggleButtonStateTracker.put(position,false);
+        }
 
+        boolean isChecked = toggleButtonStateTracker.get(position);
 
-
-
+    holder.toggle.setChecked(isChecked);
 
 
         firebref.child("user-favos").child(uid).child(item.getName()).addValueEventListener(new ValueEventListener() {
@@ -177,13 +226,13 @@ public class WanAdapter extends BaseAdapter {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists())
                 {
-                    toggle.setBackgroundResource(R.drawable.heart_liked);
-                    toggle.setChecked(true);
+                    holder.toggle.setBackgroundResource(R.drawable.heart_liked);
+                    holder.toggle.setChecked(true);
                 }
                 else
                 {
-                    toggle.setChecked(false);
-                    toggle.setBackgroundResource(R.drawable.heart_notliked);
+                    holder.toggle.setChecked(false);
+                    holder.toggle.setBackgroundResource(R.drawable.heart_notliked);
                 }
             }
 
@@ -198,13 +247,13 @@ public class WanAdapter extends BaseAdapter {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists())
                 {
-                    toggla.setBackgroundResource(R.drawable.bg_greenf);
-                    toggla.setChecked(true);
+                    holder.toggla.setBackgroundResource(R.drawable.bg_greenf);
+                    holder.toggla.setChecked(true);
                 }
                 else
                 {
-                    toggla.setChecked(false);
-                    toggla.setBackgroundResource(R.drawable.bg_greenreal);
+                    holder.toggla.setChecked(false);
+                    holder.toggla.setBackgroundResource(R.drawable.bg_greenreal);
                 }
             }
 
@@ -221,7 +270,7 @@ public class WanAdapter extends BaseAdapter {
 
 
 
-        toggla.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.toggla.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     item.setChecked(true);
@@ -233,7 +282,7 @@ public class WanAdapter extends BaseAdapter {
                     writePost(uid, item.getStatus(), item.getName(), item.getCost(), item.getRating());
 
 //                    writeNewPost(uid, item.getStatus(), item.getName(), item.getCost(), item.getRating());
-                    toggla.setBackgroundResource(R.drawable.bg_greenf);
+                    holder.toggla.setBackgroundResource(R.drawable.bg_greenf);
 
 
 
@@ -246,7 +295,7 @@ public class WanAdapter extends BaseAdapter {
 //                    mDatabase.child("user-favos").child(uid).child(item.getName()).removeValue();
                     item.setChecked(false);
 
-                    toggla.setBackgroundResource(R.drawable.bg_greenreal);
+                    holder.toggla.setBackgroundResource(R.drawable.bg_greenreal);
 
                     // The toggle is disabled means "dislike" in your case // call api for dislike
                 }
@@ -265,19 +314,19 @@ public class WanAdapter extends BaseAdapter {
 
 
 
-        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    item.setChecked(true);
+//                    item.setChecked(true);
 
 
-
+                    toggleButtonStateTracker.put(position, isChecked);
 
 
 
 
                     writeNewPost(uid, item.getStatus(), item.getName(), item.getCost(), item.getRating());
-                    toggle.setBackgroundResource(R.drawable.heart_liked);
+                    holder.toggle.setBackgroundResource(R.drawable.heart_liked);
 
 
 
@@ -289,7 +338,7 @@ public class WanAdapter extends BaseAdapter {
                     mDatabase.child("user-favos").child(uid).child(item.getName()).removeValue();
                     item.setChecked(false);
 
-                    toggle.setBackgroundResource(R.drawable.heart_notliked);
+                    holder.toggle.setBackgroundResource(R.drawable.heart_notliked);
 
                     // The toggle is disabled means "dislike" in your case // call api for dislike
                 }
@@ -305,7 +354,7 @@ public class WanAdapter extends BaseAdapter {
 
 
 
-        buy.setOnClickListener(new View.OnClickListener() {
+        holder.buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i=new Intent(activity,Payments.class);
@@ -316,7 +365,7 @@ public class WanAdapter extends BaseAdapter {
 
 
 //        buy.setText("Buy tickets at "+item.getCost()+" /=");
-buy.setText("Buy Tickets");
+        holder.buy.setText("Buy Tickets");
 
 
 
@@ -326,26 +375,28 @@ buy.setText("Buy Tickets");
 
 
 
-		name.setText(item.getName());
+        holder.name.setText(item.getName());
 
-        imge.setText(item.getImge());
-        if(item.getCost().equals("FREE")) {
-            cost.setText("" + item.getCost());
+        holder.imge.setText(item.getImge());
+        String costCon=item.getCost().toUpperCase();
+//        if(item.getCost().equals("FREE")) {
+        if(costCon.equals("FREE")) {
+            holder.cost.setText("" + item.getCost());
         }
         else
         {
-            cost.setText("KSH. " + item.getCost());
+            holder.cost.setText("KSH. " + item.getCost());
         }
-        time.setText(item.getTimes());
-        longitude.setText(item.getLongitude());
-        latitude.setText(item.getLatitude());
-        rating.setText(item.getRating());
+        holder.time.setText(item.getTimes());
+        holder.longitude.setText(item.getLongitude());
+        holder.latitude.setText(item.getLatitude());
+        holder.rating.setText(item.getRating());
 
 
 
-        rates.setRating(Float.parseFloat(item.getRating()));
+        holder.rates.setRating(Float.parseFloat(item.getRating()));
 
-        status.setText(item.getStatus());
+        holder.status.setText(item.getStatus());
 
 
 
@@ -446,23 +497,35 @@ buy.setText("Buy Tickets");
 
 		// Feed image
 		if (item.getImge() != null) {
-			feedImageView.setImageUrl(item.getImge(), imageLoader);
-			feedImageView.setVisibility(View.VISIBLE);
-            String num="0.3";
-            feedImageView.setAlpha(Float.parseFloat(num));
+            holder.feedImageView.setImageUrl(item.getImge(), imageLoader);
+            holder.feedImageView.setVisibility(View.VISIBLE);
+//            String num="0.3";
+//            feedImageView.setAlpha(Float.parseFloat(num));
 
-			feedImageView
-					.setResponseObserver(new WanImageView.ResponseObserver() {
+
+
+
+            holder.feedImageView
+					.setResponseObserver(new WanImageViewBlur.ResponseObserver() {
 						@Override
 						public void onError() {
+
+
 						}
 
 						@Override
 						public void onSuccess() {
+
+
+//                            BitmapDrawable drawable = (BitmapDrawable) feedImageView.getDrawable();
+//                            Bitmap bitmap = drawable.getBitmap();
+//                            Bitmap blurred = blurRenderScript(bitmap, radiusArr[3]);//second parametre is radius
+//                            feedImageView.setImageBitmap(blurred);
+
 						}
 					});
 		} else {
-			feedImageView.setVisibility(View.GONE);
+            holder.feedImageView.setVisibility(View.GONE);
 		}
 
 		return convertView;
@@ -516,6 +579,60 @@ buy.setText("Buy Tickets");
 
     }
 
+    @SuppressLint("NewApi")
+    private Bitmap blurRenderScript(Bitmap smallBitmap, int radius) {
+
+        try {
+            smallBitmap = RGB565toARGB888(smallBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
+        Bitmap bitmap = Bitmap.createBitmap(
+                smallBitmap.getWidth(), smallBitmap.getHeight(),
+                Bitmap.Config.ARGB_8888);
+
+        RenderScript renderScript = RenderScript.create(context);
+
+        Allocation blurInput = Allocation.createFromBitmap(renderScript, smallBitmap);
+        Allocation blurOutput = Allocation.createFromBitmap(renderScript, bitmap);
+
+        ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(renderScript,
+                Element.U8_4(renderScript));
+        blur.setInput(blurInput);
+        blur.setRadius(radius); // radius must be 0 < r <= 25
+        blur.forEach(blurOutput);
+
+        blurOutput.copyTo(bitmap);
+        renderScript.destroy();
+
+        return bitmap;
+
+    }
+
+    private Bitmap RGB565toARGB888(Bitmap img) throws Exception {
+        int numPixels = img.getWidth() * img.getHeight();
+        int[] pixels = new int[numPixels];
+
+        //Get JPEG pixels.  Each int is the color values for one pixel.
+        img.getPixels(pixels, 0, img.getWidth(), 0, 0, img.getWidth(), img.getHeight());
+
+        //Create a Bitmap of the appropriate format.
+        Bitmap result = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.ARGB_8888);
+
+        //Set RGB pixels.
+        result.setPixels(pixels, 0, result.getWidth(), 0, 0, result.getWidth(), result.getHeight());
+        return result;
+    }
+
+
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setIsVisible(boolean isVisible) {
+        this.isVisible = isVisible;
+    }
 }

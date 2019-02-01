@@ -1,8 +1,10 @@
 package com.ogalo.partympakache.wanlive;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -11,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -49,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private String user_id;
 
-
+    private static Context mContext;
     private FirebaseAuth mAuth;
     private RelativeLayout mLoginLayout;
 
@@ -57,21 +60,39 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mEditText;
     private String display_name;
     private String userId;
-    private SweetAlertDialog pDialog;
+     private SweetAlertDialog pDialog=null;
     String userNickname;
 
+    private int i = -1;
+    public static Context getContext() {
+        //  return instance.getApplicationContext();
+        return mContext;
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+      pDialog=null;
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        mContext = getApplicationContext();
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         mAuth = FirebaseAuth.getInstance();
 
+//    pDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
 
-
-        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-
+//        pDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
 
         mRegProgress = new ProgressDialog(this);
 
@@ -83,11 +104,14 @@ public class LoginActivity extends AppCompatActivity {
         mLoginPassword.setText("");
 
 
-        mLoginPassword.setText(PreferenceUtils.getUserId());
-//        mLoginEmail.setText(PreferenceUtils.getNickname());
+//        mLoginPassword.setText(PreferenceUtils.getUserId());
+        mLoginEmail.setText(PreferenceUtils.getNickname());
 
 
         mConnectButton=(Button)findViewById(R.id.login_button);
+
+
+
         mLoginLayout = (RelativeLayout) findViewById(R.id.layout_logina);
         regist_button=(Button)findViewById(R.id.logina);
 
@@ -97,6 +121,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), LoginSignUp.class));
             }
         });
+
 
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,19 +140,65 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(!TextUtils.isEmpty(email) || !TextUtils.isEmpty(password)){
 
+//                    final SweetAlertDialog pDialog;
+                   pDialog=new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+
 //                    mRegProgress.setTitle("Logging in");
 //                    mRegProgress.setMessage("Checking in");
 //                    mRegProgress.setCanceledOnTouchOutside(false);
 //                    mRegProgress.show();
-
-                    pDialog.getProgressHelper().setBarColor(Color.parseColor("#B21AAC"));
+//                     pDialog = new SweetAlertDialog(getApplicationContext(), SweetAlertDialog.PROGRESS_TYPE);
+//                    pDialogf.getProgressHelper().setBarColor(Color.parseColor("#B21AAC"));
                     pDialog.setTitleText("Logging In");
                     pDialog.setContentText("Setting Profile");
                     pDialog.setCancelable(false);
                     pDialog.show();
 
 
-                    loginUser(email, password);
+                    new CountDownTimer(800 * 7, 800) {
+                        public void onTick(long millisUntilFinished) {
+                            // you can change the progress bar color by ProgressHelper every 800 millis
+                            i++;
+                            switch (i){
+                                case 0:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(android.R.color.holo_red_light));
+                                    break;
+                                case 1:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.colorAccent));
+                                    break;
+                                case 2:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(android.R.color.holo_blue_light));
+                                    break;
+                                case 3:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(android.R.color.holo_orange_light));
+                                    break;
+                                case 4:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.facebook));
+                                    break;
+                                case 5:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.google_plus));
+                                    break;
+                                case 6:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.ok_light));
+                                    break;
+                            }
+                        }
+
+                        public void onFinish() {
+                            i = -1;
+                            pDialog.setTitleText("Success!")
+                                    .setConfirmText("OK")
+                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                        }
+                    }.start();
+
+
+
+
+
+
+
+                    loginUser(pDialog,email, password);
 
 
                     String useridnew=mLoginEmail.getText().toString()+mLoginPassword.getText().toString()+user_id;
@@ -169,7 +240,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-    private void connectToSendBird(final String userId) {
+    private void connectToSendBird(final String userId, final SweetAlertDialog sweet) {
         // Show the loading indicator
         showProgressBar(true);
         mConnectButton.setEnabled(false);
@@ -189,12 +260,33 @@ public class LoginActivity extends AppCompatActivity {
 
                     // Show login failure snackbar
                     mRegProgress.dismiss();
-                    showSnackbar("Login to WanLive failed");
+                    sweet.dismissWithAnimation();
+
+
+
+                    new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.ERROR_TYPE)
+                            .setTitleText("Error")
+                            .setContentText("Login to WanLive failed")
+                            .setConfirmText("Okay")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    sDialog.dismissWithAnimation();
+                                }
+                            })
+                            .show();
+
+
+
+
+//                    showSnackbar("Login to WanLive failed");
                     mConnectButton.setEnabled(true);
                     PreferenceUtils.setConnected(false);
                     return;
                 }
 
+else
+                {
                 PreferenceUtils.setNickname(user.getNickname());
                 PreferenceUtils.setProfileUrl(user.getProfileUrl());
                 PreferenceUtils.setConnected(true);
@@ -202,13 +294,17 @@ public class LoginActivity extends AppCompatActivity {
                 // Update the user's nickname
 //                updateCurrentUserInfo(userNickname);
                 updateCurrentUserPushToken();
-
+                    sweet.dismissWithAnimation();
                 // Proceed to MainActivity
                 Intent intent = new Intent(getApplicationContext(), WanMaps.class);
 
                 startActivity(intent);
-                pDialog.dismissWithAnimation();
+
                 finish();
+
+
+            }
+
             }
         });
     }
@@ -217,7 +313,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-    private void loginUser(String email, String password) {
+    private void loginUser(final SweetAlertDialog dialog, String email, String password) {
 
 
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -241,12 +337,12 @@ public class LoginActivity extends AppCompatActivity {
 //                            mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //                            startActivity(mainIntent);
 //                            finish();
-                            mRegProgress.dismiss();
+//                            mRegProgress.dismiss();
 
 //                                Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
 //                                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //                                startActivity(mainIntent);
-                            connectToSendBird(userId);
+                            connectToSendBird(userId,dialog);
 
                         }
                     });
@@ -256,12 +352,24 @@ public class LoginActivity extends AppCompatActivity {
 
                 } else {
 
-                    pDialog.dismissWithAnimation();
+                   dialog.dismissWithAnimation();
 
                     String task_result = task.getException().getMessage().toString();
 
-                    Toast.makeText(LoginActivity.this, "Error : " + task_result, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(LoginActivity.this, "Error : " + task_result, Toast.LENGTH_LONG).show();
+//                    showSnackbar("WanLive is not connected");
 
+                    new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.ERROR_TYPE)
+                            .setTitleText("Error")
+                            .setContentText("WanLive cannot connect to your account")
+                            .setConfirmText("Okay")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    sDialog.dismissWithAnimation();
+                                }
+                            })
+                            .show();
                 }
 
             }

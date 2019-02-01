@@ -6,12 +6,16 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.RelativeLayout.LayoutParams;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageContainer;
-import com.android.volley.toolbox.ImageLoader.ImageListener;
+import com.duowan.mobile.netroid.NetroidError;
+import com.duowan.mobile.netroid.toolbox.ImageLoader;
 
-public class WanImageView extends ImageView {
+
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.ImageLoader;
+//import com.android.volley.toolbox.ImageLoader.ImageContainer;
+//import com.android.volley.toolbox.ImageLoader.ImageListener;
+
+public class WanImageView extends android.support.v7.widget.AppCompatImageView {
 
 	public interface ResponseObserver {
 		public void onError();
@@ -49,7 +53,7 @@ public class WanImageView extends ImageView {
 	/**
 	 * Current ImageContainer. (either in-flight or finished)
 	 */
-	private ImageContainer mImageContainer;
+	private ImageLoader.ImageContainer mImageContainer;
 
 	public WanImageView(Context context) {
 		this(context, null);
@@ -68,10 +72,10 @@ public class WanImageView extends ImageView {
 	 * Sets URL of the image that should be loaded into this view. Note that
 	 * calling this will immediately either set the cached image (if available)
 	 * or the default image specified by
-	 * {@link VolleyImageView#setDefaultImageResId(int)} on the view.
+//	 * {link VolleyImageView#setDefaultImageResId(int)} on the view.
 	 *
-	 * NOTE: If applicable, {@link VolleyImageView#setDefaultImageResId(int)}
-	 * and {@link VolleyImageView#setErrorImageResId(int)} should be called
+	 * NOTE: If applicable, {link VolleyImageView#setDefaultImageResId(int)}
+	 * and { VolleyImageView#setErrorImageResId(int)} should be called
 	 * prior to calling this function.
 	 *
 	 * @param url
@@ -151,10 +155,11 @@ public class WanImageView extends ImageView {
 		// The pre-existing content of this view didn't match the current URL.
 		// Load the new image
 		// from the network.
-		ImageContainer newContainer = mImageLoader.get(mUrl,
-				new ImageListener() {
+		ImageLoader.ImageContainer newContainer = mImageLoader.get(mUrl,
+				new ImageLoader.ImageListener() {
+
 					@Override
-					public void onErrorResponse(VolleyError error) {
+					public void onError(NetroidError error) {
 						if (mErrorImageId != 0) {
 							setImageResource(mErrorImageId);
 						}
@@ -165,8 +170,7 @@ public class WanImageView extends ImageView {
 					}
 
 					@Override
-					public void onResponse(final ImageContainer response,
-							boolean isImmediate) {
+					public void onSuccess(final ImageLoader.ImageContainer response, boolean isImmediate) {
 						// If this was an immediate response that was delivered
 						// inside of a layout
 						// pass do not set the image immediately as it will
@@ -178,7 +182,7 @@ public class WanImageView extends ImageView {
 							post(new Runnable() {
 								@Override
 								public void run() {
-									onResponse(response, false);
+									onSuccess(response, false);
 								}
 							});
 							return;
@@ -201,6 +205,55 @@ public class WanImageView extends ImageView {
 
 						}
 					}
+
+//					@Override
+//					public void onErrorResponse(VolleyError error) {
+//						if (mErrorImageId != 0) {
+//							setImageResource(mErrorImageId);
+//						}
+//
+//						if (mObserver != null) {
+//							mObserver.onError();
+//						}
+//					}
+//
+//					@Override
+//					public void onResponse(final ImageLoader.ImageContainer response,
+//							boolean isImmediate) {
+//						// If this was an immediate response that was delivered
+//						// inside of a layout
+//						// pass do not set the image immediately as it will
+//						// trigger a requestLayout
+//						// inside of a layout. Instead, defer setting the image
+//						// by posting back to
+//						// the main thread.
+//						if (isImmediate && isInLayoutPass) {
+//							post(new Runnable() {
+//								@Override
+//								public void run() {
+//									onResponse(response, false);
+//								}
+//							});
+//							return;
+//						}
+//
+//						int bWidth = 0, bHeight = 0;
+//						if (response.getBitmap() != null) {
+//
+//							setImageBitmap(response.getBitmap());
+//							bWidth = response.getBitmap().getWidth();
+//							bHeight = response.getBitmap().getHeight();
+//							adjustImageAspect(bWidth, bHeight);
+//
+//						} else if (mDefaultImageId != 0) {
+//							setImageResource(mDefaultImageId);
+//						}
+//
+//						if (mObserver != null) {
+//							mObserver.onSuccess();
+//
+//						}
+//					}
 				});
 
 		// update the ImageContainer to be the new bitmap container.
@@ -256,7 +309,8 @@ public class WanImageView extends ImageView {
 		int new_height = 0;
 		new_height = swidth * bHeight / bWidth;
 		params.width = swidth;
-		params.height = new_height;
+//		params.height = new_height;
+		params.height = 450;
 		setLayoutParams(params);
 	}
 }

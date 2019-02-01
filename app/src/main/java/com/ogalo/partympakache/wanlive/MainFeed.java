@@ -1,9 +1,11 @@
 package com.ogalo.partympakache.wanlive;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -25,27 +27,39 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.android.volley.Cache;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
+//import com.android.volley.Cache;
+//import com.android.volley.Request;
+//import com.android.volley.Response;
+//import com.android.volley.VolleyError;
+//import com.android.volley.VolleyLog;
+//import com.android.volley.toolbox.JsonObjectRequest;
+import com.duowan.mobile.netroid.Listener;
+import com.duowan.mobile.netroid.NetroidError;
+import com.duowan.mobile.netroid.cache.BitmapImageCache;
+import com.duowan.mobile.netroid.cache.DiskCache;
+import com.duowan.mobile.netroid.request.StringRequest;
 import com.ogalo.partympakache.wanlive.adapter.WanAdapter;
 import com.ogalo.partympakache.wanlive.app.AppController;
+import com.ogalo.partympakache.wanlive.app.SelfImageLoader;
+import com.ogalo.partympakache.wanlive.app.WanLive;
+import com.ogalo.partympakache.wanlive.data.EndlessScrollListener;
 import com.ogalo.partympakache.wanlive.data.WanItem;
+import com.wang.avi.AVLoadingIndicatorView;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 
 
-public class MainFeed extends AppCompatActivity  {
+public class MainFeed extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener  {
     private static final String TAG = "WanLive";
     private ListView listView;
     private String ischecked;
@@ -53,39 +67,71 @@ public class MainFeed extends AppCompatActivity  {
     private List<WanItem> feedItems;
     private ProgressDialog mRegProgress;
     private SwipeRefreshLayout swipeContainer;
-    private String URL_FEED = "http://www.wayawaya.co.ke/wayawaya.co.ke/bill/wanlive/wanlive_thebalanceofdestiny.json";
-
+    private String URL_FEED = "http://butterknife.000webhostapp.com/wanrest/wan_alldata.php";
+    private int offSet = 0;
+    private AVLoadingIndicatorView avid;
     @SuppressLint("NewApi")
+
+
+
+    @Override
+    protected void initNetroid() {
+        File diskCacheDir = new File(getCacheDir(), "WanLive");
+        int diskCacheSize = 50 * 1024 * 1024; // 50MB
+        WanLive.init(new DiskCache(diskCacheDir, diskCacheSize));
+
+
+        WanLive.setImageLoader(new SelfImageLoader(WanLive.getRequestQueue(),
+                new BitmapImageCache(diskCacheSize), getResources(), getAssets()));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main10);
 
         mRegProgress = new ProgressDialog(this);
-
+        avid=findViewById(R.id.avids);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
 
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeContainer.setOnRefreshListener(this);
 
-            @Override
 
-            public void onRefresh() {
+        swipeContainer.post(new Runnable() {
+                                @Override
+                                public void run() {
 
-                // Your code to refresh the list here.
 
-                // Make sure you call swipeContainer.setRefreshing(false)
 
-                // once the network request has completed successfully.
 
-//                fetchTimelineAsync(0);
-listAdapter.notifyDataSetChanged();
-            }
 
-        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+processEventListener();
+
+
+
+
+
+
+
+                                }
+                            }
+        );
 
 
         swipeContainer.setColorSchemeColors(getResources().getColor(android.R.color.holo_red_light),
@@ -96,7 +142,7 @@ listAdapter.notifyDataSetChanged();
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        FloatingActionButton settimgs=(FloatingActionButton)findViewById(R.id.settingsview);
 //        FloatingActionButton favours=(FloatingActionButton)findViewById(R.id.favourites);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -130,28 +176,28 @@ listAdapter.notifyDataSetChanged();
         listView.setAdapter(listAdapter);
 
 
+listView.setOnScrollListener(new EndlessScrollListener());
 
-
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem,
-                                 int visibleItemCount, int totalItemCount) {
-                boolean enable = false;
-                if(listView != null && listView.getChildCount() > 0){
-                    // check if the first item of the list is visible
-                    boolean firstItemVisible = listView.getFirstVisiblePosition() == 0;
-                    // check if the top of the first item is visible
-                    boolean topOfFirstItemVisible = listView.getChildAt(0).getTop() == 0;
-                    // enabling or disabling the refresh layout
-                    enable = firstItemVisible && topOfFirstItemVisible;
-                }
-                swipeContainer.setEnabled(enable);
-            }});
+//        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+//
+//            @Override
+//            public void onScrollStateChanged(AbsListView view, int scrollState) {
+//            }
+//
+//            @Override
+//            public void onScroll(AbsListView view, int firstVisibleItem,
+//                                 int visibleItemCount, int totalItemCount) {
+//                boolean enable = false;
+//                if(listView != null && listView.getChildCount() > 0){
+//                    // check if the first item of the list is visible
+//                    boolean firstItemVisible = listView.getFirstVisiblePosition() == 0;
+//                    // check if the top of the first item is visible
+//                    boolean topOfFirstItemVisible = listView.getChildAt(0).getTop() == 0;
+//                    // enabling or disabling the refresh layout
+//                    enable = firstItemVisible && topOfFirstItemVisible;
+//                }
+//                swipeContainer.setEnabled(enable);
+//            }});
 
 
 
@@ -180,8 +226,8 @@ listAdapter.notifyDataSetChanged();
 
 
 
-                   Intent i=new Intent(getApplicationContext(), DetailsActivity.class);
-                   i.putExtra("checkeds", ischecked);
+                Intent i=new Intent(getApplicationContext(), DetailsActivity.class);
+                i.putExtra("checkeds", ischecked);
                 i.putExtra("longitude", longitude);
                 i.putExtra("status", status);
                 i.putExtra("latitude", latitude);
@@ -193,7 +239,7 @@ listAdapter.notifyDataSetChanged();
 
 
 
-                    startActivity(i);
+                startActivity(i);
 
 
 
@@ -203,58 +249,230 @@ listAdapter.notifyDataSetChanged();
         });
 
 
+
+
+
+
+
         // These two lines not needed,
         // just to get the look of facebook (changing background color & hiding the icon)
 
 
         // We first check for cached request
+//        feedItems.clear();
+//        String bill="Bill";
+//        Cache cache = AppController.getInstance().getRequestQueue().getCache();
+//        Cache.Entry entry = cache.get(URL_FEED);
+//        if (entry != null && bill=="Bil") {
+//            // fetch the data from cache
+//            try {
+//                String data = new String(entry.data, "UTF-8");
+//                try {
+//                    parseJsonFeed(new JSONObject(data));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
+//
+//        } else {
+//            // making fresh volley request and getting json
+//
+//            JsonObjectRequest jsonReq = new JsonObjectRequest(Request.Method.GET,
+//                    URL_FEED, null, new Response.Listener<JSONObject>() {
+//
+//
+//                @Override
+//                public void onResponse(JSONObject response) {
+//                    VolleyLog.d(TAG, "Response: " + response.toString());
+//                    if (response != null) {
+//
+//
+//
+//                        parseJsonFeed(response);
+//                    }
+//
+//
+//                }
+//            }, new Response.ErrorListener() {
+//
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    VolleyLog.d(TAG, "Error: " + error.getMessage());
+//                }
+//            });
+//
+//            // Adding request to volley request queue
+//            AppController.getInstance().addToRequestQueue(jsonReq);
+//        }
 
-        String bill="Bill";
-        Cache cache = AppController.getInstance().getRequestQueue().getCache();
-        Cache.Entry entry = cache.get(URL_FEED);
-        if (entry != null && bill=="Bil") {
-            // fetch the data from cache
-            try {
-                String data = new String(entry.data, "UTF-8");
+    }
+
+
+    private void processEventListener() {
+
+
+
+
+
+
+        // making fresh volley request and getting json
+//
+//                                        JsonObjectRequest jsonReq = new JsonObjectRequest(Request.Method.GET,
+//                                                URL_FEED, null, new Response.Listener<JSONObject>() {
+//
+//
+//                                            @Override
+//                                            public void onResponse(JSONObject response) {
+//                                                VolleyLog.d(TAG, "Response: " + response.toString());
+//                                                if (response != null) {
+//
+//
+//
+//                                                    parseJsonFeed(response);
+//                                                }
+//
+//
+//                                            }
+//                                        }, new Response.ErrorListener() {
+//
+//                                            @Override
+//                                            public void onErrorResponse(VolleyError error) {
+//                                                VolleyLog.d(TAG, "Error: " + error.getMessage());
+//                                            }
+//                                        });
+//
+//                                        // Adding request to volley request queue
+//                                        WanLive.getInstance().addToRequestQueue(jsonReq);
+        // fetch the data from cache
+//                                        try {
+//                                            String data = new String(entry.data, "UTF-8");
+//                                            try {
+//                                                parseJsonFeed(new JSONObject(data));
+//                                            } catch (JSONException e) {
+//                                                e.printStackTrace();
+//                                            }
+//                                        } catch (UnsupportedEncodingException e) {
+//                                            e.printStackTrace();
+//                                        }
+
+
+
+
+
+
+
+
+        StringRequest request = new StringRequest(URL_FEED, new Listener<String>() {
+            ProgressDialog mPrgsDialog;
+
+            @Override
+            public void onPreExecute() {
+
+                startAnim();
+
+
+            }
+
+            // cancel the dialog with onFinish() callback
+            @Override
+            public void onFinish() {
+                stopAnim();
+            }
+
+            @Override
+            public void onSuccess(String response) {
+
+
                 try {
-                    parseJsonFeed(new JSONObject(data));
+                    JSONObject responses=new JSONObject(response);
+                    parseJsonFeed(responses);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+//                Toast.makeText(getApplicationContext(), "response is ： " + response, 2000).show();
             }
 
-        } else {
-            // making fresh volley request and getting json
+            @Override
+            public void onError(NetroidError error) {
+                stopAnim();
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
 
-            JsonObjectRequest jsonReq = new JsonObjectRequest(Request.Method.GET,
-                    URL_FEED, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onCancel() {
+                stopAnim();
+                Toast.makeText(getApplicationContext(), "request was cancel", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+// add the request to RequestQueue, will execute quickly if has idle thread
+        WanLive.add(request);
+    }
 
 
-                @Override
-                public void onResponse(JSONObject response) {
-                    VolleyLog.d(TAG, "Response: " + response.toString());
-                    if (response != null) {
+    void stopAnim(){
+        avid.hide();
+        // or avi.smoothToHide();
+    }
 
+    void startAnim(){
+        avid.show();
+        // or avi.smoothToShow();
+    }
+    @Override
+    public void onRefresh() {
+        feedItems.clear();
 
-
-                        parseJsonFeed(response);
-                    }
-
-
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d(TAG, "Error: " + error.getMessage());
-                }
-            });
-
-            // Adding request to volley request queue
-            AppController.getInstance().addToRequestQueue(jsonReq);
-        }
+processEventListener();
+//        String bill="Bill";
+//        Cache cache = AppController.getInstance().getRequestQueue().getCache();
+//        Cache.Entry entry = cache.get(URL_FEED);
+////                                        if (entry != null && bill=="Bil") {
+//        if (entry != null) {
+//            // fetch the data from cache
+//            try {
+//                String data = new String(entry.data, "UTF-8");
+//                try {
+//                    parseJsonFeed(new JSONObject(data));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
+//
+//        } else {
+//            // making fresh volley request and getting json
+//
+//            JsonObjectRequest jsonReq = new JsonObjectRequest(Request.Method.GET,
+//                    URL_FEED, null, new Response.Listener<JSONObject>() {
+//
+//
+//                @Override
+//                public void onResponse(JSONObject response) {
+//                    VolleyLog.d(TAG, "Response: " + response.toString());
+//                    if (response != null) {
+//
+//
+//
+//                        parseJsonFeed(response);
+//                    }
+//
+//
+//                }
+//            }, new Response.ErrorListener() {
+//
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    VolleyLog.d(TAG, "Error: " + error.getMessage());
+//                }
+//            });
+//
+//            // Adding request to volley request queue
+//            AppController.getInstance().addToRequestQueue(jsonReq);
+//        }
 
     }
 
@@ -262,6 +480,14 @@ listAdapter.notifyDataSetChanged();
      * Parsing json reponse and passing the data to feed view list adapter
      * */
     private void parseJsonFeed(JSONObject response) {
+
+//        JSONObject response=new JSONObject(responses);
+
+        // showing refresh animation before making http call
+        swipeContainer.setRefreshing(true);
+
+        // appending offset to url
+        String url = URL_FEED + offSet;
         try {
 
             mRegProgress.setTitle("WanLive");
@@ -276,11 +502,11 @@ listAdapter.notifyDataSetChanged();
 
                 WanItem item = new WanItem();
                 item.setId(feedObj.getInt("id"));
-                item.setName(feedObj.getString("name"));
+                item.setName(feedObj.getString("title"));
 //                Toast.makeText(this, ischecked, Toast.LENGTH_SHORT).show();
                 item.setCost(feedObj.getString("cost"));
 
-                item.setTimes(feedObj.getString("matime"));
+                item.setTimes(feedObj.getString("time"));
                 item.setStatus(feedObj.getString("status"));
 
                 item.setRating(feedObj.getString("rating"));
@@ -293,7 +519,7 @@ listAdapter.notifyDataSetChanged();
 
 
 
-                String name=feedObj.getString("name");
+                String name=feedObj.getString("title");
                 String longitude=feedObj.getString("longitude");
 
 
@@ -305,8 +531,8 @@ listAdapter.notifyDataSetChanged();
                 item.setImge(image);
 
                 item.setProfilePic(feedObj.getString("profilePic"));
-                item.setTimeStamp(feedObj.getString("timeStamp"));
-                item.setTimeStamp(feedObj.getString("timeStamp"));
+//                item.setTimeStamp(feedObj.getString("timeStamp"));
+//                item.setTimeStamp(feedObj.getString("timeStamp"));
 
                 // url might be null sometimes
                 String feedUrl = feedObj.isNull("url") ? null : feedObj
@@ -316,12 +542,19 @@ listAdapter.notifyDataSetChanged();
 
 
                 feedItems.add(item);
+
+
+
             }
 
             // notify data changes to list adapater
             listAdapter.notifyDataSetChanged();
             mRegProgress.dismiss();
-        } catch (JSONException e) {
+            swipeContainer.setRefreshing(false);
+        }
+
+
+        catch (JSONException e) {
             e.printStackTrace();
         }
     }

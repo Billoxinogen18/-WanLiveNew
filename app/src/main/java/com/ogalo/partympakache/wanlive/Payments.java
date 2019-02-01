@@ -13,8 +13,7 @@ import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class Payments extends AppCompatActivity {
     Double clickcount=0.0;
-    private SweetAlertDialog pDialog;
-    private SweetAlertDialog success;
+
     Double tickets=1.0;
     private Button change;
     private ImageButton add;
@@ -24,13 +23,42 @@ public class Payments extends AppCompatActivity {
 
     private TextView ticketsi;
     private TextView ticcounter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payments);
+
+
+
+
+
+
+Button payment=(Button)findViewById(R.id.payment);
+
+
+//
+//payment.setOnClickListener(new View.OnClickListener() {
+//    @Override
+//    public void onClick(View v) {
+//
+//
+//        Toast.makeText(Payments.this, "Shane haas just pressed this button", Toast.LENGTH_SHORT).show();
+//
+//
+//
+//
+//    }
+//});
+
+
+
+
+
+
         Intent i = getIntent();
-        pDialog = new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE);
-        success = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
+//        pDialog = new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE);
+//        success = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
         String pricer= i.getStringExtra("price");
         buyer=Double.parseDouble(pricer);
         add=(ImageButton) findViewById(R.id.add);
@@ -112,12 +140,17 @@ public class Payments extends AppCompatActivity {
                 }
                 else
                 {
-                    ticcounter.setText("Ticket");
-                    pDialog.setTitleText("Error...");
-                    pDialog.setContentText("Please select at least one ticket");
-                    pDialog.setCancelText("Okay");
-
-                    pDialog.show();
+                    new SweetAlertDialog(Payments.this, SweetAlertDialog.WARNING_TYPE)
+                            .setTitleText("Error?")
+                            .setContentText("Please select at least one ticket")
+                            .setConfirmText("Okay")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    sDialog.dismissWithAnimation();
+                                }
+                            })
+                            .show();
                 }
 
 
@@ -137,25 +170,49 @@ public class Payments extends AppCompatActivity {
                 if(clickcount.equals(0.0))
                 {
 
-                            pDialog.setTitleText("Error...");
-                    pDialog.setContentText("Please select at least one ticket");
-                    pDialog.show();
+                    new SweetAlertDialog(Payments.this, SweetAlertDialog.WARNING_TYPE)
+                            .setTitleText("Invalid")
+                            .setContentText("Buy at least one ticket")
+                            .setConfirmText("Okay")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    sDialog.dismissWithAnimation();
+                                }
+                            })
+                            .show();
 
                 }
 
                 else {
                     //WIll implement alertDialog where users can choose paypal or mpesa
 
-                            success.setTitleText("Error...");
-                            success.setContentText("Select MPESA or PayPal");
-                            success.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//                            success.setTitleText("Error...");
+//                            success.setContentText("Select MPESA or PayPal");
+//                            success.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//                                @Override
+//                                public void onClick(SweetAlertDialog sDialog) {
+//                                    sDialog.dismissWithAnimation();
+//                                    sDialog.dismiss();
+//                                    sDialog.cancel();
+//                                }
+//                            });
+//                            success.show();
+//
+
+
+
+                    new SweetAlertDialog(Payments.this, SweetAlertDialog.ERROR_TYPE)
+                            .setTitleText("Error")
+                            .setContentText("Select Mpesa or Paypal")
+                            .setConfirmText("Okay")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                 @Override
                                 public void onClick(SweetAlertDialog sDialog) {
                                     sDialog.dismissWithAnimation();
-                                    sDialog.dismiss();
                                 }
-                            });
-                            success.show();
+                            })
+                            .show();
 
 
                 }

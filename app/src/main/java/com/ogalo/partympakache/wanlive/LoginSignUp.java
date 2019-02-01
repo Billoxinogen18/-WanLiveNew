@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -79,7 +81,7 @@ public class LoginSignUp extends AppCompatActivity {
     private Button lognActivity;
     private EditText mPassword;
 
-
+    private int i = -1;
     private Toolbar mToolbar;
     private String userId;
     String userNickname;
@@ -89,7 +91,7 @@ public class LoginSignUp extends AppCompatActivity {
 
 
 
-    private SweetAlertDialog pDialog;
+    private SweetAlertDialog pDialog=null;
     //ProgressDialog
 
 
@@ -102,7 +104,8 @@ public class LoginSignUp extends AppCompatActivity {
         setContentView(R.layout.activity_login_sign_up);
 
 
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
 
@@ -135,7 +138,7 @@ public class LoginSignUp extends AppCompatActivity {
         }
 
 
-        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+
 
 
 
@@ -185,6 +188,8 @@ public class LoginSignUp extends AppCompatActivity {
 
                 if(!TextUtils.isEmpty(display_name) || !TextUtils.isEmpty(email) || !TextUtils.isEmpty(password)){
 
+                    pDialog = new SweetAlertDialog(LoginSignUp.this, SweetAlertDialog.PROGRESS_TYPE);
+
 //                    mRegProgress.setTitle("Registering User");
 //                    mRegProgress.setMessage("Creating Profile");
 //                    mRegProgress.setCanceledOnTouchOutside(false);
@@ -195,7 +200,50 @@ public class LoginSignUp extends AppCompatActivity {
                     pDialog.setContentText("Creating Profile");
                     pDialog.setCancelable(false);
                     pDialog.show();
-                    register_user(display_name, email, password);
+                    new CountDownTimer(800 * 7, 800) {
+                        public void onTick(long millisUntilFinished) {
+                            // you can change the progress bar color by ProgressHelper every 800 millis
+                            i++;
+                            switch (i){
+                                case 0:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(android.R.color.holo_red_light));
+                                    break;
+                                case 1:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.colorAccent));
+                                    break;
+                                case 2:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(android.R.color.holo_blue_light));
+                                    break;
+                                case 3:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(android.R.color.holo_orange_light));
+                                    break;
+                                case 4:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.facebook));
+                                    break;
+                                case 5:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.google_plus));
+                                    break;
+                                case 6:
+                                    pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.ok_light));
+                                    break;
+                            }
+                        }
+
+                        public void onFinish() {
+                            i = -1;
+                            pDialog.setTitleText("Success!")
+                                    .setConfirmText("OK")
+                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                        }
+                    }.start();
+
+
+
+
+
+
+
+                    register_user(pDialog,display_name, email, password);
 
 
 //                userId = mPassword.getText().toString();
@@ -266,7 +314,49 @@ public class LoginSignUp extends AppCompatActivity {
             pDialog.setCancelable(false);
             pDialog.show();
 
-            connectToSendBird(PreferenceUtils.getUserId(), PreferenceUtils.getNickname());
+            new CountDownTimer(800 * 7, 800) {
+                public void onTick(long millisUntilFinished) {
+                    // you can change the progress bar color by ProgressHelper every 800 millis
+                    i++;
+                    switch (i){
+                        case 0:
+                            pDialog.getProgressHelper().setBarColor(getResources().getColor(android.R.color.holo_red_light));
+                            break;
+                        case 1:
+                            pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.colorAccent));
+                            break;
+                        case 2:
+                            pDialog.getProgressHelper().setBarColor(getResources().getColor(android.R.color.holo_blue_light));
+                            break;
+                        case 3:
+                            pDialog.getProgressHelper().setBarColor(getResources().getColor(android.R.color.holo_orange_light));
+                            break;
+                        case 4:
+                            pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.facebook));
+                            break;
+                        case 5:
+                            pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.google_plus));
+                            break;
+                        case 6:
+                            pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.ok_light));
+                            break;
+                    }
+                }
+
+                public void onFinish() {
+                    i = -1;
+                    pDialog.setTitleText("Success!")
+                            .setConfirmText("OK")
+                            .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                }
+            }.start();
+
+
+
+
+
+
+            connectToSendBird(pDialog,PreferenceUtils.getUserId(), PreferenceUtils.getNickname());
         }
     }
 
@@ -275,7 +365,7 @@ public class LoginSignUp extends AppCompatActivity {
      * @param userId    The unique ID of the user.
      * @param userNickname  The user's nickname, which will be displayed in chats.
      */
-    private void connectToSendBird(final String userId, final String userNickname) {
+    private void connectToSendBird(final SweetAlertDialog sweet, final String userId, final String userNickname) {
         // Show the loading indicator
         showProgressBar(true);
         mConnectButton.setEnabled(false);
@@ -288,14 +378,33 @@ public class LoginSignUp extends AppCompatActivity {
 
                 if (e != null) {
                     // Error!
-                    Toast.makeText(
-                            getApplicationContext(), "" + e.getCode() + ": " + e.getMessage(),
-                            Toast.LENGTH_SHORT)
-                            .show();
+//                    Toast.makeText(
+//                            getApplicationContext(), "" + e.getCode() + ": " + e.getMessage(),
+//                            Toast.LENGTH_SHORT)
+//                            .show();
 
                     // Show login failure snackbar
 //                    mRegProgress.dismiss();
-                    showSnackbar("Login to WanLive failed");
+
+                    sweet.dismissWithAnimation();
+//                    showSnackbar("Login to WanLive failed");
+
+
+
+
+                    new SweetAlertDialog(LoginSignUp.this, SweetAlertDialog.ERROR_TYPE)
+                            .setTitleText("Error")
+                            .setContentText("Login to WanLive failed")
+                            .setConfirmText("Okay")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    sDialog.dismissWithAnimation();
+                                }
+                            })
+                            .show();
+
+
                     mConnectButton.setEnabled(true);
                     PreferenceUtils.setConnected(false);
                     return;
@@ -318,7 +427,7 @@ public class LoginSignUp extends AppCompatActivity {
 
 
                 startActivity(intent);
-                pDialog.dismissWithAnimation();
+                sweet.dismissWithAnimation();
 //                mRegProgress.dismiss();
                 finish();
             }
@@ -375,7 +484,7 @@ public class LoginSignUp extends AppCompatActivity {
     }
 
 
-    private void register_user(final String display_name, final String email, final String password) {
+    private void register_user(final SweetAlertDialog dialog, final String display_name, final String email, final String password) {
 
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -411,13 +520,13 @@ public class LoginSignUp extends AppCompatActivity {
 
 
                             if(task.isSuccessful()){
-                                pDialog.dismissWithAnimation();
+                               dialog.dismissWithAnimation();
 //                                mRegProgress.dismiss();
 
 //                                Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
 //                                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //                                startActivity(mainIntent);
-                                connectToSendBird(userId, display_name);
+                                connectToSendBird(dialog,userId, display_name);
 
 
                             }
@@ -428,8 +537,20 @@ public class LoginSignUp extends AppCompatActivity {
 
                 } else {
 //                    mRegProgress.hide();
-                    pDialog.dismissWithAnimation();
-                    Toast.makeText(getApplicationContext(), "Cannot Sign in. Please check the form and try again.", Toast.LENGTH_LONG).show();
+                   dialog.dismissWithAnimation();
+
+                    new SweetAlertDialog(LoginSignUp.this, SweetAlertDialog.ERROR_TYPE)
+                            .setTitleText("Error")
+                            .setContentText("Failed to Sign Up")
+                            .setConfirmText("Okay")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    sDialog.dismissWithAnimation();
+                                }
+                            })
+                            .show();
+//                    Toast.makeText(getApplicationContext(), "Cannot Sign in. Please check the form and try again.", Toast.LENGTH_LONG).show();
 
                 }
 
@@ -450,70 +571,6 @@ public class LoginSignUp extends AppCompatActivity {
 
 
 
-    private void parseJsonFeed(JSONObject response) {
-        try {
-
-            mRegProgress.setTitle("WanLive");
-            mRegProgress.setMessage("Loading Feed");
-
-            mRegProgress.setCanceledOnTouchOutside(false);
-            mRegProgress.show();
-            JSONArray feedArray = response.getJSONArray("feed");
-
-            for (int i = 0; i < feedArray.length(); i++) {
-                JSONObject feedObj = (JSONObject) feedArray.get(i);
-
-                WanItem item = new WanItem();
-                item.setId(feedObj.getInt("id"));
-                item.setName(feedObj.getString("name"));
-//                Toast.makeText(this, ischecked, Toast.LENGTH_SHORT).show();
-                item.setCost(feedObj.getString("cost"));
-
-                item.setTimes(feedObj.getString("matime"));
-                item.setStatus(feedObj.getString("status"));
-
-                item.setRating(feedObj.getString("rating"));
-                item.setLatitude(feedObj.getString("latitude"));
-                item.setLongitude(feedObj.getString("longitude"));
-
-                String longitudef=feedObj.getString("latitude");
-//                 String longituded=feedObj.getString("longitude");
-//                Toast.makeText(this, item.getLatitude(), Toast.LENGTH_SHORT).show();
-
-
-
-                String name=feedObj.getString("name");
-                String longitude=feedObj.getString("longitude");
-
-
-
-
-                // Image might be null sometimes
-                String image = feedObj.isNull("image") ? null : feedObj
-                        .getString("image");
-                item.setImge(image);
-
-                item.setProfilePic(feedObj.getString("profilePic"));
-                item.setTimeStamp(feedObj.getString("timeStamp"));
-                item.setTimeStamp(feedObj.getString("timeStamp"));
-
-                // url might be null sometimes
-                String feedUrl = feedObj.isNull("url") ? null : feedObj
-                        .getString("location");
-                item.setUrl(feedUrl);
-                String io=Integer.toString(i);
-
-
-                markerItems.add(item);
-            }
-
-            // notify data changes to list adapater
-
-            mRegProgress.dismiss();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void setUser_id(String user_id)
     {
